@@ -1,4 +1,149 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$default-primary: mat.define-palette(mat.$indigo-palette);
+$default-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$default-warn: mat.define-palette(mat.$red-palette);
+
+// Custom care and success palettes (defaults to amber and green).
+$default-care: mat.define-palette(mat.$amber-palette, 500, 400, 700);
+$bg-care: mat.get-color-from-palette($default-care, 500);
+$bg-care-contrast: mat.get-color-from-palette($default-care, '500-contrast');
+.mat-mdc-raised-button.mat-care {
+    --mdc-protected-button-container-color: #{$bg-care};
+    --mdc-protected-button-label-text-color: #{$bg-care-contrast};
+}
+
+$default-success: mat.define-palette(mat.$green-palette, 600, 500, 800);
+$bg-success: mat.get-color-from-palette($default-success, 600);
+$bg-success-contrast: mat.get-color-from-palette($default-success, '600-contrast');
+
+.mat-mdc-raised-button.mat-success {
+    --mdc-protected-button-container-color: #{$bg-success};
+    --mdc-protected-button-label-text-color: #{$bg-success-contrast};
+}
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$default-theme: mat.define-light-theme((
+  color: (
+    primary: $default-primary,
+    accent: $default-accent,
+    warn: $default-warn,
+    care: $default-care,
+    success: $default-success
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($default-theme);
+
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+$grid-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px) !default;
+
+$font-size-base: 1rem; // Assumes the browser default, typically `16px`
+
+$hd5-font-size: $font-size-base * 3;
+$h1-font-size: $font-size-base * 2.5;
+$h2-font-size: $font-size-base * 2;
+$h3-font-size: $font-size-base * 1.75;
+$h4-font-size: $font-size-base * 1.5;
+$h5-font-size: $font-size-base * 1.25;
+$h6-font-size: $font-size-base;
+$h7-font-size: $font-size-base * .7;
+
+$font-sizes: (
+    d5: $hd5-font-size,
+    1: $h1-font-size,
+    2: $h2-font-size,
+    3: $h3-font-size,
+    4: $h4-font-size,
+    5: $h5-font-size,
+    6: $h6-font-size,
+    7: $h7-font-size // New font-size
+);
+
+$utilities: (
+    ) !default;
+
+$utilities: map-merge(
+    ("min-width": ( // New map
+        responsive: true,
+        property: min-width,
+        class: min-w,
+        values: (
+            0: 0,
+            100: 100%,
+            lg: 992px,
+            xl: 1200px
+        )
+    ),
+    "width": (
+        responsive: true, // Now is responsive
+        property: width,
+        class: w,
+        values: (
+            d5: $hd5-font-size, // New values
+            1: $h1-font-size,
+            2: $h2-font-size,
+            3: $h3-font-size,
+            4: $h4-font-size,
+            5: $h5-font-size,
+            6: $h6-font-size,
+            7: $h7-font-size,
+            25: 25%,
+            30: 30%, // New value
+            50: 50%,
+            75: 75%,
+            100: 100%,
+            auto: auto
+        )
+    ),
+    "height": (
+        responsive: true, // Now is responsive
+        property: height,
+        class: h,
+        values: (
+            d5: $hd5-font-size, // New values
+            1: $h1-font-size,
+            2: $h2-font-size,
+            3: $h3-font-size,
+            4: $h4-font-size,
+            5: $h5-font-size,
+            6: $h6-font-size,
+            7: $h7-font-size,
+            25: 25%,
+            30: 30%, // New value
+            50: 50%,
+            75: 75%,
+            100: 100%,
+            auto: auto)),
+), $utilities
+);
 
 /* Importing Bootstrap SCSS file. */
 @import 'bootstrap/scss/bootstrap';

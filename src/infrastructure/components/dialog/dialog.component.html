@@ -1,0 +1,46 @@
+<div mat-dialog-title class="dialog-title d-flex justify-content-between mt-3">
+
+    <h2>{{ data.title }}</h2>
+    <button mat-mini-fab aria-label="Close dialog" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    {{ data.text }}
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button *ngIf="data.no" mat-raised-button mat-dialog-close color="warn" [mat-dialog-close]="'yes'" class="fs-2 h-d5">No</button>
+    <button mat-raised-button cdkFocusInitial color="primary" [mat-dialog-close]="'yes'" class="fs-2 h-d5">Yes</button>
+</mat-dialog-actions>
+<!-- Modal -->
+<!-- <ng-template #confirmation let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Sign Up</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <h2>You are not registered, would you like to register?</h2>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close('login')">
+            No
+        </button>
+        <button type="button" class="btn btn-success" ngbAutofocus (click)="modal.close('signup')">
+            Yes
+        </button>
+    </div>
+</ng-template>
+<ng-template #error let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title text-danger">ERROR</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <h2>Invalid password</h2>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="modal.close()">
+            OK
+        </button>
+    </div>
+</ng-template> -->

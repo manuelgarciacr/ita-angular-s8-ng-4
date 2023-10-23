@@ -1,14 +1,19 @@
 # ItaAngularS8Ng4
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.5.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.1.
+
+## Level 1. Exercise 1.
+
+Code scaffolding: `ng new --style scss --strict --standalone --routing  --commit false --skip-tests ita-angular-s8-ng-4`
+
+Themming and controls with Angular Material;
+Layout with Bootstrap classes.
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
 ## Code scaffolding
-
-ng new --style scss --strict --standalone --routing  ita-angular-s8-ng-4
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 

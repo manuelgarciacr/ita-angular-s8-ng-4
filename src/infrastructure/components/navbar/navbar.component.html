@@ -1,0 +1,61 @@
+<nav class="navbar position-sticky navbar-expand-sm">
+    <div class="container-fluid">
+        <button
+            class="navbar-toggler"
+            (click)="isMenuCollapsed = !isMenuCollapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarTogglerDemo03"
+            aria-controls="navbarTogglerDemo03"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand fs-3 me-5" href="#">Inprocode</a>
+        <div
+            class="collapse navbar-collapse"
+            [ngbCollapse]="isMenuCollapsed"
+            id="navbarTogglerDemo03"
+        >
+            <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+                <a mat-tab-link *ngFor="let link of links"
+                    (click)="activeLink = link"
+                    [active]="activeLink == link"
+                    [routerLink]="link"
+                    routerLinkActive="active"
+                    class="text-capitalize">
+                    {{link}}
+                </a>
+            </nav>
+            <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+            <!-- <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item" *ngFor="let path of paths">
+                    <a
+                        class="nav-link"
+                        (click)="isMenuCollapsed = true"
+                        aria-current="page"
+                        [routerLink]="path.path"
+                        routerLinkActive="active"
+                        translate
+                        >ROUTES.{{path.data?.["trn"]}}</a
+                    >
+                </li>
+            </ul>
+            <div ngbDropdown class="d-inline-block">
+                <button
+                    type="button"
+                    class="input-group-text"
+                    (click)="isMenuCollapsed = true"
+                    id="dropdownBasic1"
+                    ngbDropdownToggle
+                    translate
+                >
+                    NAVBAR.LogIn
+                </button>
+            </div>
+            <toggle-lang (collapseNavbar)="isMenuCollapsed = true"></toggle-lang>
+            <toggle-theme (collapseNavbar)="isMenuCollapsed = true"></toggle-theme> -->
+        </div>
+    </div>
+</nav>
