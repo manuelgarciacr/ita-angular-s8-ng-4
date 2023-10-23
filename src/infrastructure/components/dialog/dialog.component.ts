@@ -29,7 +29,7 @@ import { UsersRepoService } from "src/infrastructure/repositories/users-repo.ser
         // ReactiveFormsModule,
         MatDialogModule,
         MatIconModule,
-        // MatButtonModule,
+        MatButtonModule,
         // MatSelectModule,
         // MatInputModule,
         // MatFormFieldModule,

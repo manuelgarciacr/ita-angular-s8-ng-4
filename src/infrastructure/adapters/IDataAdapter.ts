@@ -18,6 +18,6 @@ export interface IDataAdapter<T> {
     //get: <T>(url: string) => Promise<{ status: number; data: T }>;
     put: (user: T) => Observable<resp<T>>;
     // put: <T>(url: string, data: T) => Observable<resp<T>>;
-    // post: <T>(url: string, data: T) => Observable<resp<T>>;
+    post: (data: T) => Observable<resp<T>>;
 }
 

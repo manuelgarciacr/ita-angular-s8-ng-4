@@ -153,7 +153,7 @@ export class UserComponent implements OnInit {
         return subject + " is not valid.";
     };
 
-    save() {
+    protected save() {
         const newVal: IUser = this.userForm.value;
 
         if (newVal.password != this.data.user.password)
@@ -162,7 +162,7 @@ export class UserComponent implements OnInit {
         newVal.email = newVal.email.toLowerCase();
 
         if (this.data.action == "add")
-            this.add(newVal);
+            this.userToAddExists(newVal);
         else
             this.actualize(newVal);
 
@@ -192,7 +192,7 @@ export class UserComponent implements OnInit {
                 const dialogRef = this.dialog.open(DialogComponent, {
                     data: {
                         title: "Error",
-                        text: `The user can not be registered.\n${resp.message}`,
+                        text: `The user can not be actualized.\n${resp.message}`,
                         no: false,
                     },
                 });
@@ -200,27 +200,46 @@ export class UserComponent implements OnInit {
         })
     }
 
-    private add = (newVal: IUser) => {
+    private userToAddExists = (newVal: IUser) => {
 
-       this.repo.getUsers({ email: newVal.email }).subscribe(resp => {
-           if (resp.data.length > 0) {
-               const dialogRef = this.dialog.open(DialogComponent, {
-                   data: {
-                       title: "Alert",
-                       text: "A user with the same email has already been registered",
-                       no: false,
-                   },
-               });
+        this.repo.getUsers({ email: newVal.email }).subscribe(resp => {
+            if (resp.data.length > 0) {
+                const dialogRef = this.dialog.open(DialogComponent, {
+                    data: {
+                        title: "Alert",
+                        text: "A user with the same email has already been registered",
+                        no: false,
+                    },
+                });
+            } else {
+                this.add(newVal)
+            }
 
             //    dialogRef.afterClosed().subscribe(result => {
             //        console.log("The dialog was closed");
             //        this.animal = result;
             //    });
-           }
 
            console.log("RESP", resp);
        });
 
+    }
+
+    private add = (newVal: IUser) =>{
+        this.repo.addUser(newVal).subscribe(resp => {
+            console.log("ADD", resp);
+            if (resp.status == 200)
+                this.dialogRef.close(resp);
+            else {
+                const dialogRef = this.dialog.open(DialogComponent, {
+                    data: {
+                        title: "Error",
+                        text: `The user can not be added.\n${resp.message}`,
+                        no: false,
+                    },
+                });
+            }
+        })
     }
     // signUpConfirmation(){
     //     this.modalService.open(this.confirmationRef).result.then(

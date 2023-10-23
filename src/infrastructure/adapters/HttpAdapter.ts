@@ -45,22 +45,21 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
     //         );
     // };
 
-    get = (arg?: string | Params): Observable<resp<T>> =>{
+    get = (arg?: string | Params): Observable<resp<T>> => {
         let params = new HttpParams(); // Query params
-        let url = this.url
+        let url = this.url;
 
-        if (typeof arg == "string")
-            url += `/${arg}`;
-        else if (typeof arg == "object")
-            params = params.appendAll(arg);
+        if (typeof arg == "string") url += `/${arg}`;
+        else if (typeof arg == "object") params = params.appendAll(arg);
         else if (typeof arg != "undefined")
-            throw new Error("Get param is invalid")
+            throw new Error("Get param is invalid");
 
-        return this._get(url, params)
-    }
+        return this._get(url, params);
+    };
 
-    private _get = (url: string, params: HttpParams) => this.http
-            .get<resp<T>>(url, {...httpOptions, params})
+    private _get = (url: string, params: HttpParams) =>
+        this.http
+            .get<resp<T>>(url, { ...httpOptions, params })
             .pipe(
                 retry({ count: 2, delay: this.shouldRetry }),
                 catchError(this.handleError<T>("http get"))
@@ -82,6 +81,15 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
             .pipe(
                 retry({ count: 2, delay: this.shouldRetry }),
                 catchError(this.handleError<T>("http put"))
+            );
+    };
+
+    post = (user: T) => {
+        return this.http
+            .post<resp<T>>(this.url, user, httpOptions)
+            .pipe(
+                retry({ count: 2, delay: this.shouldRetry }),
+                catchError(this.handleError<T>("http post"))
             );
     };
 
