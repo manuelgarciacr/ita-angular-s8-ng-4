@@ -9,8 +9,9 @@
     {{ data.text }}
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button *ngIf="data.no" mat-raised-button mat-dialog-close color="warn" [mat-dialog-close]="'yes'" class="fs-2 h-d5">No</button>
-    <button mat-raised-button cdkFocusInitial color="primary" [mat-dialog-close]="'yes'" class="fs-2 h-d5">Yes</button>
+    <button *ngIf="data.cancel" mat-raised-button cdkFocusInitial color="care" [mat-dialog-close]="'cancel'" class="fs-3 h-1">{{ data.cancel }}</button>
+    <button *ngIf="data.no" mat-raised-button mat-dialog-close color="warn" [mat-dialog-close]="'no'" class="fs-3 h-1">{{ data.no }}</button>
+    <button *ngIf="data.yes" mat-raised-button cdkFocusInitial color="primary" [mat-dialog-close]="'yes'" class="fs-3 h-1">{{ data.yes }}</button>
 </mat-dialog-actions>
 <!-- Modal -->
 <!-- <ng-template #confirmation let-modal>

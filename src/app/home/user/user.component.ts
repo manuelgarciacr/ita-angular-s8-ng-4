@@ -14,7 +14,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import * as bcrypt from "bcryptjs";
 import { UsersRepoService } from "src/infrastructure/repositories/users-repo.service";
-import { DialogComponent } from "src/infrastructure/components/dialog/dialog.component";
+import { Dialog2Component } from "src/infrastructure/components/dialog2/dialog2.component";
 
 interface Role {
   value: string;
@@ -76,7 +76,13 @@ export class UserComponent implements OnInit {
         private repo: UsersRepoService,
         private dialogRef: MatDialogRef<UserComponent>,
         private dialog: MatDialog,
-        @Inject(MAT_DIALOG_DATA) public data: {action: string, title: string, position: number, user: IUser}
+        @Inject(MAT_DIALOG_DATA)
+        public data: {
+            action: string;
+            title: string;
+            position: number;
+            user: IUser;
+        }
     ) {}
 
     ngOnInit(): void {
@@ -103,7 +109,9 @@ export class UserComponent implements OnInit {
                 validators: [Validators.required],
             }),
         };
+        this.data.user._id = this.data.user._id ?? "";
         this.data.user.updatedAt = this.data.user.updatedAt ?? "";
+        this.data.user.role = this.data.user.role ?? "default";
         console.log("DDD", this.data);
         this.userForm = this.formBuilder.group(formGroup);
         this.userForm.setValue(this.data.user);
@@ -139,10 +147,10 @@ export class UserComponent implements OnInit {
                 : "The role";
 
         if (errors["required"]) return subject + " is mandatory.";
-        if (errors['minlength'])
+        if (errors["minlength"])
             return (
                 subject +
-                ` must be at lest ${errors['minlength'].requiredLength} characters.`
+                ` must be at lest ${errors["minlength"].requiredLength} characters.`
             );
 
         if (errors["checkPassword"])
@@ -161,10 +169,8 @@ export class UserComponent implements OnInit {
 
         newVal.email = newVal.email.toLowerCase();
 
-        if (this.data.action == "add")
-            this.userToAddExists(newVal);
-        else
-            this.actualize(newVal);
+        if (this.data.action == "add") this.userExists(newVal, this.add);
+        else this.userExists(newVal, this.actualize);
 
         //this.activeModal.close();
 
@@ -182,37 +188,18 @@ export class UserComponent implements OnInit {
         // });
     }
 
-    private actualize = (newVal: IUser) => {
-
-        this.repo.putUser(newVal).subscribe(resp => {
-            console.log("SAVE", resp);
-            if (resp.status == 200)
-                this.dialogRef.close(resp);
-            else {
-                const dialogRef = this.dialog.open(DialogComponent, {
-                    data: {
-                        title: "Error",
-                        text: `The user can not be actualized.\n${resp.message}`,
-                        no: false,
-                    },
-                });
-            }
-        })
-    }
-
-    private userToAddExists = (newVal: IUser) => {
-
+    private userExists = (newVal: IUser, callback: (newVal: IUser) => void) => {
         this.repo.getUsers({ email: newVal.email }).subscribe(resp => {
-            if (resp.data.length > 0) {
-                const dialogRef = this.dialog.open(DialogComponent, {
+            if (resp.data.length > 0 && resp.data[0]._id !== newVal._id) {
+                const dialogRef = this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Alert",
                         text: "A user with the same email has already been registered",
-                        no: false,
+                        yes: "OK",
                     },
                 });
             } else {
-                this.add(newVal)
+                callback(newVal);
             }
 
             //    dialogRef.afterClosed().subscribe(result => {
@@ -220,27 +207,42 @@ export class UserComponent implements OnInit {
             //        this.animal = result;
             //    });
 
-           console.log("RESP", resp);
-       });
+            console.log("RESP", resp);
+        });
+    };
 
-    }
-
-    private add = (newVal: IUser) =>{
-        this.repo.addUser(newVal).subscribe(resp => {
-            console.log("ADD", resp);
-            if (resp.status == 200)
-                this.dialogRef.close(resp);
+    private actualize = (newVal: IUser) => {
+        this.repo.putUser(newVal).subscribe(resp => {
+            console.log("SAVE", resp);
+            if (resp.status == 200) this.dialogRef.close(resp);
             else {
-                const dialogRef = this.dialog.open(DialogComponent, {
+                const dialogRef = this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Error",
-                        text: `The user can not be added.\n${resp.message}`,
-                        no: false,
+                        text: `The user can not be actualized.\n${resp.message}`,
+                        yes: "OK",
                     },
                 });
             }
-        })
-    }
+        });
+    };
+
+    private add = (newVal: IUser) => {
+        delete newVal._id;
+        this.repo.addUser(newVal).subscribe(resp => {
+            console.log("ADD", resp);
+            if (resp.status == 200) this.dialogRef.close(resp);
+            else {
+                const dialogRef = this.dialog.open(Dialog2Component, {
+                    data: {
+                        title: "Error",
+                        text: `The user can not be added.\n${resp.message}`,
+                        yes: "OK",
+                    },
+                });
+            }
+        });
+    };
     // signUpConfirmation(){
     //     this.modalService.open(this.confirmationRef).result.then(
     //         (result) => {
@@ -288,6 +290,6 @@ export class UserComponent implements OnInit {
     areChanges = () => {
         const a = this.userForm.value;
         const b = this.data.user;
-        return Object.keys(a).some(key => a[key] !== b[key as keyof IUser])
+        return Object.keys(a).some(key => a[key] !== b[key as keyof IUser]);
     };
 }

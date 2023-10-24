@@ -34,10 +34,10 @@ import { UsersRepoService } from "src/infrastructure/repositories/users-repo.ser
         // MatInputModule,
         // MatFormFieldModule,
     ],
-    templateUrl: "./dialog.component.html",
-    styleUrls: ["./dialog.component.scss"],
+    templateUrl: "./dialog2.component.html",
+    styleUrls: ["./dialog2.component.scss"],
 })
-export class DialogComponent { // implements OnInit {
+export class Dialog2Component { // implements OnInit {
     // protected userForm: FormGroup = this.formBuilder.group({});
     // private _user!: IUser;
     // @Input()
@@ -74,7 +74,7 @@ export class DialogComponent { // implements OnInit {
         // private ren: Renderer2,
         //private repo: UsersRepoService,
         // private dialogRef: MatDialogRef<DialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: {title: string, text: string, no: boolean}
+        @Inject(MAT_DIALOG_DATA) public data: {title: string, text: string, yes?: string, no?: string, cancel?: string}
     ) {}
 
     // ngOnInit(): void {

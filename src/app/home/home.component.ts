@@ -85,7 +85,7 @@ export class HomeComponent implements OnInit {
                     action: "add",
                     title: "Add user",
                     position: 0,
-                    user: {_id: "", email: "", firstName: "", lastName: "", password: "", role: "default"} },
+                    user: {email: "", firstName: "", lastName: "", password: ""} },
             })
             .afterClosed()
             .subscribe(result => {
