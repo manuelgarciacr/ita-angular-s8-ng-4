@@ -56,9 +56,7 @@ export class HomeComponent implements OnInit {
         );
     }
 
-    edit(
-        data: { position: number; user: IUser },
-    ): void {
+    edit(data: { position: number; user: IUser }): void {
         const { position, ...user } = data;
         this.dialog
             .open(UserComponent, {
@@ -74,8 +72,7 @@ export class HomeComponent implements OnInit {
             });
     }
 
-    addUser(
-    ): void {
+    addUser(): void {
         this.dialog
             .open(UserComponent, {
                 enterAnimationDuration: "1000ms",
@@ -85,11 +82,33 @@ export class HomeComponent implements OnInit {
                     action: "add",
                     title: "Add user",
                     position: 0,
-                    user: {email: "", firstName: "", lastName: "", password: ""} },
+                    user: {
+                        email: "",
+                        firstName: "",
+                        lastName: "",
+                        password: "",
+                    },
+                },
             })
             .afterClosed()
             .subscribe(result => {
                 console.log("Add dialog result: ", result);
+                this.ngOnInit();
+            });
+    }
+
+    delete(data: { position: number; user: IUser }): void {
+        const { position, ...user } = data;
+        this.dialog
+            .open(UserComponent, {
+                enterAnimationDuration: "1000ms",
+                exitAnimationDuration: "500ms",
+                panelClass: "my-outlined-dialog",
+                data: { action: "delete", title: "Delete user", position, user },
+            })
+            .afterClosed()
+            .subscribe(result => {
+                console.log("Delete dialog result: ", result);
                 this.ngOnInit();
             });
     }

@@ -10,9 +10,10 @@
     <form [formGroup]="userForm" class="was-validated bg-light text-bg-light rounded-4 p-5">
         <mat-form-field class="w-100">
             <mat-label>Email address</mat-label>
-            <input type="email" matInput [formControl]="getCtrl('email')" placeholder="Ex. pat@example.com"
+            <input type="email" matInput [readonly]="formDisabled" [formControl]="getCtrl('email')" placeholder="Ex. pat@example.com"
                 aria-describedby="emailHelp" autocomplete="off"> <!-- autocomplete="email" -->
-            <button *ngIf="isSet('email')" matSuffix mat-icon-button aria-label="Clear" (click)="set('email', '')">
+            <button type="button" *ngIf="isSet('email')" matSuffix mat-icon-button aria-label="Clear" [disabled]="formDisabled"
+                (click)="set('email', '')">
                 <mat-icon>close</mat-icon>
             </button>
             <div id="emailHelp" class="form-text d-none">
@@ -22,9 +23,9 @@
         </mat-form-field>
         <mat-form-field class="w-100">
             <mat-label>First name</mat-label>
-            <input type="text" matInput [formControl]="getCtrl('firstName')" placeholder="First name"
+            <input type="text" matInput [readonly]="formDisabled" [formControl]="getCtrl('firstName')" placeholder="First name"
                 aria-describedby="firstNameHelp" autocomplete="off"> <!-- autocomplete="given-name" -->
-            <button *ngIf="isSet('firstName')" matSuffix mat-icon-button aria-label="Clear"
+            <button type="button" *ngIf="isSet('firstName')" matSuffix mat-icon-button aria-label="Clear" [disabled]="formDisabled"
                 (click)="set('firstName', '')">
                 <mat-icon>close</mat-icon>
             </button>
@@ -35,9 +36,9 @@
         </mat-form-field>
         <mat-form-field class="w-100">
             <mat-label>Last name</mat-label>
-            <input type="text" matInput [formControl]="getCtrl('lastName')" placeholder="Last name"
+            <input type="text" matInput [readonly]="formDisabled" [formControl]="getCtrl('lastName')" placeholder="Last name"
                 aria-describedby="lastNameHelp" autocomplete="off"> <!--  autocomplete="family-name" -->
-            <button *ngIf="isSet('lastName')" matSuffix mat-icon-button aria-label="Clear"
+            <button type="button" *ngIf="isSet('lastName')" matSuffix mat-icon-button aria-label="Clear" [disabled]="formDisabled"
                 (click)="set('lastName', '')">
                 <mat-icon>close</mat-icon>
             </button>
@@ -48,19 +49,20 @@
         </mat-form-field>
         <mat-form-field class="w-100 mb-5">
             <mat-label>Password</mat-label>
-            <input [attr.type]="pwdState.type[pwdState.state]" matInput [formControl]="getCtrl('password')"
+            <input [attr.type]="pwdState.type[pwdState.state]" matInput [readonly]="formDisabled" [formControl]="getCtrl('password')"
                 placeholder="Password" aria-describedby="passwordHelp" autocomplete="off">
             <!-- autocomplete="current-password"-->
-            <button *ngIf="isSet('password')" matSuffix mat-icon-button aria-label="Clear" (click)="set('password', '')"
+            <button type="button" *ngIf="isSet('password')" matSuffix mat-icon-button aria-label="Clear" [disabled]="formDisabled"
+                (click)="set('password', '')"
                 class="w-3 px-0">
                 <mat-icon>close</mat-icon>
             </button>
-            <button *ngIf="pwdState.state == 0" matSuffix mat-icon-button aria-label="pwdState.alt[pwdState.state]"
-                (click)="togglePwdState()" class="w-3 px-0">
+            <button type="button" *ngIf="pwdState.state == 0" matSuffix mat-icon-button aria-label="pwdState.alt[pwdState.state]"
+                [disabled]="formDisabled" (click)="togglePwdState()" class="w-3 px-0">
                 <mat-icon>visibility</mat-icon>
             </button>
-            <button *ngIf="pwdState.state == 1" matSuffix mat-icon-button aria-label="pwdState.alt[pwdState.state]"
-                (click)="togglePwdState()" class="w-3 px-0">
+            <button type="button" *ngIf="pwdState.state == 1" matSuffix mat-icon-button aria-label="pwdState.alt[pwdState.state]"
+                [disabled]="formDisabled" (click)="togglePwdState()" class="w-3 px-0">
                 <mat-icon>visibility_off</mat-icon>
             </button>
             <div id="passwordHelp" class="form-text d-none">
@@ -71,8 +73,8 @@
         </mat-form-field>
         <mat-form-field class="col-sm-4 offset-sm-4">
             <mat-label>Role</mat-label>
-            <mat-select [formControl]="getCtrl('role')" [value]="get('role')" aria-describedby="roleHelp">
-                <mat-option *ngFor="let role of roles" [value]="role.value">
+            <mat-select required [formControl]="getCtrl('role')" [value]="get('role')" aria-describedby="roleHelp">
+                <mat-option [style.display]="formDisabled ? 'none' : 'initial'" *ngFor="let role of roles" [value]="role.value">
                     {{role.viewValue}}
                 </mat-option>
             </mat-select>

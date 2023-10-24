@@ -1,7 +1,7 @@
 import { Component, ElementRef, Inject, Input, OnInit, Renderer2, ViewChild } from "@angular/core";
 import { NgFor, NgIf } from "@angular/common";
 import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 //import { SignupComponent } from "../signup/signup.component";
 import { IUser } from "../../../domain/model/IUser";
 //import { UsersService } from "src/services/users.service";
@@ -66,6 +66,9 @@ export class UserComponent implements OnInit {
         { value: "section", viewValue: "Section head" },
         { value: "default", viewValue: "default" },
     ];
+    protected formDisabled = false;
+    @Input()
+    panelClass: string = "panel-cls"; //| string[] | Set<string> | { [key: string]: any };
 
     constructor(
         //public activeModal: NgbActiveModal,
@@ -115,6 +118,8 @@ export class UserComponent implements OnInit {
         console.log("DDD", this.data);
         this.userForm = this.formBuilder.group(formGroup);
         this.userForm.setValue(this.data.user);
+        if (this.data.action == "delete") this.formDisabled = true;
+        //this.userForm.disable({onlySelf: true})
         // if (this.user.email != null)
         //     this.userForm.get('email')!.setValue(this.user.email);
         // if (this.user.firstName != null)
