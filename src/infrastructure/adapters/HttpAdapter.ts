@@ -93,6 +93,15 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
             );
     };
 
+    delete = (id: String) => {
+        return this.http
+            .delete<resp<T>>(`${this.url}/${id}`, httpOptions)
+            .pipe(
+                retry({ count: 2, delay: this.shouldRetry }),
+                catchError(this.handleError<T>("http delete"))
+            );
+    };
+
     private handleError<T>(operation: string) {
         return (error: HttpErrorResponse): Observable<resp<T>> => {
             const status = error.status;

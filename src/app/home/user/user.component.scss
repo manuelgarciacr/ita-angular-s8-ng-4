@@ -1,3 +1,10 @@
-.hidden {
-    display: none
+// ViewEncapsulation.None
+
+.user-component {
+    &.displayNone {
+        display: none
+    }
+    &.action-btn>span::first-letter {
+        text-transform: capitalize;
+    }
 }

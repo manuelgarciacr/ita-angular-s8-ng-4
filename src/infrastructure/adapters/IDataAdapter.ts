@@ -13,11 +13,9 @@ export type Params = {
 export interface IDataAdapter<T> {
     url: string;
 
-    //get: (url: string) => Observable<resp<T>>;
     get: (arg?: string | Params) => Observable<resp<T>>; // Get all
-    //get: <T>(url: string) => Promise<{ status: number; data: T }>;
     put: (user: T) => Observable<resp<T>>;
-    // put: <T>(url: string, data: T) => Observable<resp<T>>;
     post: (data: T) => Observable<resp<T>>;
+    delete: (id: string) => Observable<resp<T>>;
 }
 

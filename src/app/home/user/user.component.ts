@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, Input, OnInit, Renderer2, ViewChild } from "@angular/core";
+import { Component, ElementRef, Inject, Input, OnInit, Renderer2, ViewChild, ViewEncapsulation } from "@angular/core";
 import { NgFor, NgIf } from "@angular/common";
 import { NgbActiveModal, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -37,6 +37,7 @@ interface Role {
     ],
     templateUrl: "./user.component.html",
     styleUrls: ["./user.component.scss"],
+    encapsulation: ViewEncapsulation.None,
 })
 export class UserComponent implements OnInit {
     protected userForm: FormGroup = this.formBuilder.group({});
@@ -67,8 +68,8 @@ export class UserComponent implements OnInit {
         { value: "default", viewValue: "default" },
     ];
     protected formDisabled = false;
-    @Input()
-    panelClass: string = "panel-cls"; //| string[] | Set<string> | { [key: string]: any };
+    // @Input()
+    // panelClass: string = "panel-cls"; //| string[] | Set<string> | { [key: string]: any };
 
     constructor(
         //public activeModal: NgbActiveModal,
@@ -81,10 +82,9 @@ export class UserComponent implements OnInit {
         private dialog: MatDialog,
         @Inject(MAT_DIALOG_DATA)
         public data: {
-            action: string;
-            title: string;
             position: number;
             user: IUser;
+            action: string;
         }
     ) {}
 
@@ -92,6 +92,8 @@ export class UserComponent implements OnInit {
         const formGroup = {
             _id: new FormControl(""),
             updatedAt: new FormControl(""),
+            createdAt: new FormControl(""),
+            __v: new FormControl(""),
             email: new FormControl("", {
                 validators: [Validators.required, Validators.email],
             }),
@@ -113,12 +115,16 @@ export class UserComponent implements OnInit {
             }),
         };
         this.data.user._id = this.data.user._id ?? "";
+        this.data.user.createdAt = this.data.user.createdAt ?? "";
         this.data.user.updatedAt = this.data.user.updatedAt ?? "";
         this.data.user.role = this.data.user.role ?? "default";
+        this.data.user.__v = this.data.user.__v ?? "";
         console.log("DDD", this.data);
         this.userForm = this.formBuilder.group(formGroup);
         this.userForm.setValue(this.data.user);
-        if (this.data.action == "delete") this.formDisabled = true;
+        if (this.data.action == "Delete") {
+            this.formDisabled = true;
+        }
         //this.userForm.disable({onlySelf: true})
         // if (this.user.email != null)
         //     this.userForm.get('email')!.setValue(this.user.email);
@@ -167,15 +173,23 @@ export class UserComponent implements OnInit {
     };
 
     protected save() {
+        console.log("ACTION", this.data.action);
         const newVal: IUser = this.userForm.value;
+
+        if (this.data.action == "Delete") {
+            this.delete(newVal._id!);
+            return;
+        }
 
         if (newVal.password != this.data.user.password)
             newVal.password = bcrypt.hashSync(newVal.password, 12);
 
         newVal.email = newVal.email.toLowerCase();
 
-        if (this.data.action == "add") this.userExists(newVal, this.add);
-        else this.userExists(newVal, this.actualize);
+        if (this.data.action == "Add") this.emailExists(newVal, this.add);
+
+        if (this.data.action == "Edit")
+            this.emailExists(newVal, this.edit);
 
         //this.activeModal.close();
 
@@ -193,7 +207,23 @@ export class UserComponent implements OnInit {
         // });
     }
 
-    private userExists = (newVal: IUser, callback: (newVal: IUser) => void) => {
+    protected delete(id: string) {
+        this.repo.deleteUser(id).subscribe(resp => {
+            console.log("DELETE", resp);
+            if (resp.status == 200) this.dialogRef.close(resp);
+            else {
+                const dialogRef = this.dialog.open(Dialog2Component, {
+                    data: {
+                        title: "Error",
+                        text: `The user can not be deleted.\n${resp.message}`,
+                        yes: "OK",
+                    },
+                });
+            }
+        });
+    }
+
+    private emailExists = (newVal: IUser, callback: (newVal: IUser) => void) => {
         this.repo.getUsers({ email: newVal.email }).subscribe(resp => {
             if (resp.data.length > 0 && resp.data[0]._id !== newVal._id) {
                 const dialogRef = this.dialog.open(Dialog2Component, {
@@ -216,15 +246,15 @@ export class UserComponent implements OnInit {
         });
     };
 
-    private actualize = (newVal: IUser) => {
+    private edit = (newVal: IUser) => {
         this.repo.putUser(newVal).subscribe(resp => {
-            console.log("SAVE", resp);
+            console.log("UPDATE", resp);
             if (resp.status == 200) this.dialogRef.close(resp);
             else {
                 const dialogRef = this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Error",
-                        text: `The user can not be actualized.\n${resp.message}`,
+                        text: `The user can not be updated.\n${resp.message}`,
                         yes: "OK",
                     },
                 });

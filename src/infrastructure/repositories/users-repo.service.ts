@@ -27,7 +27,7 @@ export class UsersRepoService {
     //     });
     // }
     getUsers = (arg?: string | Params) => this.dataSource.get(arg);
-    //getUserByEmail = (email: string) => this.dataSource.get(email);
     putUser = (user: IUser) => this.dataSource.put(user);
     addUser = (user: IUser) => this.dataSource.post(user);
+    deleteUser = (id: string) => this.dataSource.delete(id);
 }

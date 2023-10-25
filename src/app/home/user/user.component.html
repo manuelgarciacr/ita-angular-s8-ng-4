@@ -1,6 +1,6 @@
 <div mat-dialog-title class="dialog-title d-flex justify-content-between mt-3">
 
-    <h2>{{data.title}}</h2>
+    <h2>{{data.action}} user</h2>
     <button mat-mini-fab aria-label="Close dialog" mat-dialog-close>
         <mat-icon>close</mat-icon>
     </button>
@@ -73,20 +73,20 @@
         </mat-form-field>
         <mat-form-field class="col-sm-4 offset-sm-4">
             <mat-label>Role</mat-label>
-            <mat-select required [formControl]="getCtrl('role')" [value]="get('role')" aria-describedby="roleHelp">
-                <mat-option [style.display]="formDisabled ? 'none' : 'initial'" *ngFor="let role of roles" [value]="role.value">
+            <mat-select required [formControl]="getCtrl('role')" [value]="get('role')" [panelClass]="formDisabled ? 'user-component displayNone' : ''" aria-describedby="roleHelp">
+                <mat-option *ngFor="let role of roles" [value]="role.value">
                     {{role.viewValue}}
                 </mat-option>
             </mat-select>
             <div id="roleHelp" class="form-text d-none">
-                within the company.
+                Role within the company.
             </div>
         </mat-form-field>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-raised-button mat-dialog-close color="warn" class="fs-2 h-d5">Cancel</button>
-    <button mat-raised-button cdkFocusInitial color="primary"  [disabled]="!userForm.valid || !areChanges()" class="fs-2 h-d5" (click)="save()">Save</button>
+    <button mat-raised-button cdkFocusInitial color="primary"  [disabled]="!formDisabled && (!userForm.valid || !areChanges())" class="fs-2 h-d5 action-btn user-component" (click)="save()">{{ data.action }}</button>
 </mat-dialog-actions>
 <!-- Modal -->
 <!-- <ng-template #confirmation let-modal>
