@@ -15,7 +15,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="border-1 border-black border-top-0 border-end-0" sortActionDescription="Sort by firstName">
                 First Name
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.user.firstName}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.firstName}} </td>
         </ng-container>
 
         <!--Last Name Column -->
@@ -23,7 +23,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="border-black" sortActionDescription="Sort by lastName">
                 Last Name
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.user.lastName}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.lastName}} </td>
         </ng-container>
 
         <!-- Email Column -->
@@ -31,7 +31,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="border-black" sortActionDescription="Sort by email">
                 Email
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.user.email}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
         </ng-container>
 
         <!-- Password Column -->
@@ -39,7 +39,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header width="20%" class="border-black" sortActionDescription="Sort by password">
                 Password
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.user.password}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.password}} </td>
         </ng-container>
 
         <!-- Role Column -->
@@ -47,7 +47,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="border-black" sortActionDescription="Sort by role">
                 Role
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.user.role}} </td>
+            <td mat-cell *matCellDef="let element"> {{ getRole(element.role) }} </td>
         </ng-container>
 
         <!-- Edit action -->

@@ -1,3 +1,14 @@
+interface Role {
+  value: string;
+  viewValue: string;
+}
+
+export const ROLES: Role[] = [
+    { value: "admin", viewValue: "Admin" },
+    { value: "section", viewValue: "Section head" },
+    { value: "default", viewValue: "default" },
+];
+
 export interface IUser {
     _id?: string;
     password: string;

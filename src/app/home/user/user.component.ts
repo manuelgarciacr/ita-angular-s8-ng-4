@@ -15,12 +15,12 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import * as bcrypt from "bcryptjs";
 import { UsersRepoService } from "src/infrastructure/repositories/users-repo.service";
 import { Dialog2Component } from "src/infrastructure/components/dialog2/dialog2.component";
+import { ROLES } from "src/domain/model/IUser";
 
-interface Role {
-  value: string;
-  viewValue: string;
-}
-
+// interface Role {
+//   value: string;
+//   viewValue: string;
+// }
 @Component({
     selector: "user",
     standalone: true,
@@ -62,12 +62,14 @@ export class UserComponent implements OnInit {
     //     | ElementRef
     //     | undefined;
     // @ViewChild("error", { static: true }) errorRef: ElementRef | undefined;
-    protected roles: Role[] = [
-        { value: "admin", viewValue: "Admin" },
-        { value: "section", viewValue: "Section head" },
-        { value: "default", viewValue: "default" },
-    ];
+    // protected roles: Role[] = [
+    //     { value: "admin", viewValue: "Admin" },
+    //     { value: "section", viewValue: "Section head" },
+    //     { value: "default", viewValue: "default" },
+    // ];
     protected formDisabled = false;
+    protected roles = ROLES;
+
     // @Input()
     // panelClass: string = "panel-cls"; //| string[] | Set<string> | { [key: string]: any };
 
@@ -188,8 +190,7 @@ export class UserComponent implements OnInit {
 
         if (this.data.action == "Add") this.emailExists(newVal, this.add);
 
-        if (this.data.action == "Edit")
-            this.emailExists(newVal, this.edit);
+        if (this.data.action == "Edit") this.emailExists(newVal, this.edit);
 
         //this.activeModal.close();
 
@@ -223,7 +224,10 @@ export class UserComponent implements OnInit {
         });
     }
 
-    private emailExists = (newVal: IUser, callback: (newVal: IUser) => void) => {
+    private emailExists = (
+        newVal: IUser,
+        callback: (newVal: IUser) => void
+    ) => {
         this.repo.getUsers({ email: newVal.email }).subscribe(resp => {
             if (resp.data.length > 0 && resp.data[0]._id !== newVal._id) {
                 const dialogRef = this.dialog.open(Dialog2Component, {

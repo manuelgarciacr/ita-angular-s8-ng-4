@@ -3,7 +3,7 @@ import { CommonModule } from "@angular/common";
 import { MatTableDataSource, MatTableModule, MatTableDataSourcePaginator } from "@angular/material/table";
 import { MatSort, MatSortModule, Sort } from "@angular/material/sort";
 import { UsersRepoService } from "src/infrastructure/repositories/users-repo.service";
-import { IUser } from "src/domain/model/IUser";
+import { IUser, ROLES } from "src/domain/model/IUser";
 import { UserComponent } from "src/app/home/user/user.component";
 import {
     MatDialog,
@@ -15,10 +15,9 @@ import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { LiveAnnouncer } from "@angular/cdk/a11y";
 
 
-type Element = {
+interface Element extends IUser {
     position: number;
-    user: IUser;
-    //action: string
+//    user: IUser;
 };
 
 @Component({
@@ -37,7 +36,7 @@ type Element = {
 export class HomeComponent implements OnInit {
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
-    displayedColumns: string[] = [
+    protected displayedColumns: string[] = [
         "position",
         "firstName",
         "lastName",
@@ -46,7 +45,8 @@ export class HomeComponent implements OnInit {
         "role",
         "actions",
     ];
-    dataSource = new MatTableDataSource<Element>();
+    protected dataSource = new MatTableDataSource<Element>();
+    protected roles = ROLES;
 
     constructor(
         private repo: UsersRepoService,
@@ -54,24 +54,29 @@ export class HomeComponent implements OnInit {
         private _liveAnnouncer: LiveAnnouncer
     ) {}
 
-    ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-    }
-
     ngOnInit(): void {
+        console.log("DATAS", this.dataSource)
         this.repo.getUsers().subscribe(
             users =>
                 (this.dataSource.data = users.data.map((user, i) => ({
                     position: i + 1,
-                    user,
+                    //user,
+                    ...user,
                 })))
         );
     }
 
+    ngAfterViewInit() {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        // this.sort.sortables.set("user.firstName", this.sort.sortables.get("firstName")!);
+        // this.sort.sortables.delete("firstName")
+        // console.log("SORT", this.sort);
+    }
+
     // Edit and Delete
     actualize(element: Element, action: string): void {
-        //const { position, ...user } = data;
+        const { position, ...user } = element;
         this.dialog
             .open(UserComponent, {
                 enterAnimationDuration: "1000ms",
@@ -83,7 +88,7 @@ export class HomeComponent implements OnInit {
                 //     position,
                 //     user,
                 // },
-                data: { ...element, action },
+                data: { position, user, action },
             })
             .afterClosed()
             .subscribe(result => {
@@ -139,11 +144,14 @@ export class HomeComponent implements OnInit {
 
     /** Announce the change in sort state for assistive technology. */
     announceSortChange(sortState: Sort) {
-        console.log("ANNOUN", sortState)
+        console.log("ANNOUN", sortState);
         if (sortState.direction) {
             this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
         } else {
             this._liveAnnouncer.announce("Sorting cleared");
         }
     }
+
+    protected getRole = (k: string) => this.roles.find(v => v.value == k)?.viewValue;
+
 }
