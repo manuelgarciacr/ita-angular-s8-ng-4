@@ -12,18 +12,6 @@ import { NavbarComponent } from "../infrastructure/components/navbar/navbar.comp
 })
 export class AppComponent {
     title = 'ita-angular-s8-ng-4';
-    //param = { value: 'world'};
 
-    constructor(
-        //translate: TranslateService,
-    ) {
-        //translate.setDefaultLang('en');
-        //translate.use(conf.locale);
-
-        // translate.get('HOME.world').subscribe((res: string) => {
-        //     this.param['value'] = res
-        //     console.log("RES", res)
-        //     //=> 'hello world'
-        // });
-    }
+    constructor() {}
 }

@@ -1,24 +1,24 @@
-import { Component, OnInit, Renderer2, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { MatTableDataSource, MatTableModule, MatTableDataSourcePaginator } from "@angular/material/table";
+import { MatTableDataSource, MatTableModule } from "@angular/material/table";
 import { MatSort, MatSortModule, Sort } from "@angular/material/sort";
 import { UsersRepoService } from "src/infrastructure/repositories/users-repo.service";
 import { IUser, ROLES } from "src/domain/model/IUser";
 import { UserComponent } from "src/app/home/user/user.component";
 import {
     MatDialog,
-    MatDialogRef,
     MatDialogModule,
 } from "@angular/material/dialog";
 import { MatButtonModule } from "@angular/material/button";
 import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
 import { LiveAnnouncer } from "@angular/cdk/a11y";
+import { ExcelService, cellSchema } from "src/domain/services/excel.service";
+import { Row } from "write-excel-file";
 
 
 interface Element extends IUser {
     position: number;
-//    user: IUser;
-};
+}
 
 @Component({
     standalone: true,
@@ -47,20 +47,41 @@ export class HomeComponent implements OnInit {
     ];
     protected dataSource = new MatTableDataSource<Element>();
     protected roles = ROLES;
+    private schema: cellSchema<IUser>[] = [
+        {
+            key: "firstName",
+            column: "First name",
+            value: user => user.firstName
+        },
+        {
+            key: "lastName",
+            column: "Last name",
+            value: user => user.firstName
+        },
+        {
+            key: "email",
+            column: "Email",
+            value: user => user.email
+        },
+        {
+            key: "role",
+            column: "Role",
+            value: user => this.roles.find(r => r.value == user.role)?.viewValue ?? user.role
+        }
+    ]
 
     constructor(
         private repo: UsersRepoService,
+        private excel: ExcelService,
         private dialog: MatDialog,
         private _liveAnnouncer: LiveAnnouncer
     ) {}
 
     ngOnInit(): void {
-        console.log("DATAS", this.dataSource)
         this.repo.getUsers().subscribe(
             users =>
                 (this.dataSource.data = users.data.map((user, i) => ({
                     position: i + 1,
-                    //user,
                     ...user,
                 })))
         );
@@ -69,9 +90,6 @@ export class HomeComponent implements OnInit {
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        // this.sort.sortables.set("user.firstName", this.sort.sortables.get("firstName")!);
-        // this.sort.sortables.delete("firstName")
-        // console.log("SORT", this.sort);
     }
 
     // Edit and Delete
@@ -82,41 +100,13 @@ export class HomeComponent implements OnInit {
                 enterAnimationDuration: "1000ms",
                 exitAnimationDuration: "500ms",
                 panelClass: "my-outlined-dialog",
-                // data: {
-                //     action: action,
-                //     title: "Edit user",
-                //     position,
-                //     user,
-                // },
                 data: { position, user, action },
             })
             .afterClosed()
-            .subscribe(result => {
-                console.log(action + " dialog result: ", result);
+            .subscribe(() => {
                 this.ngOnInit();
             });
     }
-
-    // delete(data: { position: number; user: IUser }): void {
-    //     const { position, ...user } = data;
-    //     this.dialog
-    //         .open(UserComponent, {
-    //             enterAnimationDuration: "1000ms",
-    //             exitAnimationDuration: "500ms",
-    //             panelClass: "my-outlined-dialog",
-    //             data: {
-    //                 action: "delete",
-    //                 title: "Delete user",
-    //                 position,
-    //                 user,
-    //             },
-    //         })
-    //         .afterClosed()
-    //         .subscribe(result => {
-    //             console.log("Delete dialog result: ", result);
-    //             this.ngOnInit();
-    //         });
-    // }
 
     add(): void {
         this.dialog
@@ -136,10 +126,13 @@ export class HomeComponent implements OnInit {
                 },
             })
             .afterClosed()
-            .subscribe(result => {
-                console.log("Add dialog result: ", result);
+            .subscribe(() => {
                 this.ngOnInit();
             });
+    }
+
+    exportXls = ()=>{
+        this.excel.createExcel(this.dataSource.data as unknown as Row[], this.schema, "users.xlsx")
     }
 
     /** Announce the change in sort state for assistive technology. */

@@ -84,39 +84,7 @@
         </mat-form-field>
     </form>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
+<mat-dialog-actions class="pb-4 pe-5" align="end">
     <button mat-raised-button mat-dialog-close color="warn" class="fs-2 h-d5">Cancel</button>
     <button mat-raised-button cdkFocusInitial color="primary"  [disabled]="!formDisabled && (!userForm.valid || !areChanges())" class="fs-2 h-d5 action-btn user-component" (click)="save()">{{ data.action }}</button>
 </mat-dialog-actions>
-<!-- Modal -->
-<!-- <ng-template #confirmation let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title">Sign Up</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <h2>You are not registered, would you like to register?</h2>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="modal.close('login')">
-            No
-        </button>
-        <button type="button" class="btn btn-success" ngbAutofocus (click)="modal.close('signup')">
-            Yes
-        </button>
-    </div>
-</ng-template>
-<ng-template #error let-modal>
-    <div class="modal-header">
-        <h4 class="modal-title text-danger">ERROR</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-    </div>
-    <div class="modal-body">
-        <h2>Invalid password</h2>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="modal.close()">
-            OK
-        </button>
-    </div>
-</ng-template> -->

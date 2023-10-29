@@ -67,5 +67,8 @@
     </table>
     <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
     </mat-paginator>
-    <button mat-raised-button color="success" (click)="add()">Add user</button>
+    <div class="p-3">
+        <button mat-raised-button color="primary" class="me-2" (click)="exportXls()">Export to Excel</button>
+        <button mat-raised-button color="success" (click)="add()">Add user</button>
+    </div>
 </div>

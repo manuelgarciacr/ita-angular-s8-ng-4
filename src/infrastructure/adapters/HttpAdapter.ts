@@ -8,10 +8,6 @@ import {
 } from '@angular/common/http';
 import { Injectable, inject } from "@angular/core";
 
-// const get = async <T>(url: string) => {
-//     return fakeFetch<T>(url);
-// };
-
 const httpOptions = {
     headers: new HttpHeaders({
         "Content-Type": "application/json",
@@ -24,9 +20,6 @@ const httpOptions = {
     withCredentials: false,
 };
 
-// @Injectable({
-//     providedIn: "root",
-// })
 @Injectable()
 export class HttpAdapter<T> implements IDataAdapter<T> {
     private http: HttpClient;
@@ -35,15 +28,6 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
     constructor() {
         this.http = inject(HttpClient);
     }
-
-    // get = (): Observable<resp<T>> => {
-    //     return this.http
-    //         .get<resp<T>>(this.url, httpOptions)
-    //         .pipe(
-    //             retry({ count: 2, delay: this.shouldRetry }),
-    //             catchError(this.handleError<T>("http get"))
-    //         );
-    // };
 
     get = (arg?: string | Params): Observable<resp<T>> => {
         let params = new HttpParams(); // Query params
@@ -65,16 +49,6 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
                 catchError(this.handleError<T>("http get"))
             );
 
-    // getLogs(parms: {...string}): Observable<any> {
-    //     let a = parm
-    //     // Setup log namespace query parameter
-    //     let params = new HttpParams().set("logNamespace", logNamespace).;
-
-    //     return this.http.get(`${API_URL}/api/v1/data/logs`, {
-    //         params: params,
-    //     });
-    // }
-
     put = (user: T) => {
         return this.http
             .put<resp<T>>(this.url, user, httpOptions)
@@ -93,7 +67,7 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
             );
     };
 
-    delete = (id: String) => {
+    delete = (id: string) => {
         return this.http
             .delete<resp<T>>(`${this.url}/${id}`, httpOptions)
             .pipe(

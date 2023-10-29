@@ -6,7 +6,7 @@ interface Role {
 export const ROLES: Role[] = [
     { value: "admin", viewValue: "Admin" },
     { value: "section", viewValue: "Section head" },
-    { value: "default", viewValue: "default" },
+    { value: "default", viewValue: "Default" },
 ];
 
 export interface IUser {
