@@ -23,6 +23,7 @@
         "@mapbox/mapbox-gl-draw": "^1.4.3",
         "@ng-bootstrap/ng-bootstrap": "^15.1.1",
         "@popperjs/core": "^2.11.6",
+        "@turf/turf": "^6.5.0",
         "bcryptjs": "^2.4.3",
         "bootstrap": "^5.2.3",
         "mapbox-gl": "^2.15.0",
