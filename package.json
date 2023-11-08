@@ -9,6 +9,9 @@
         "test": "ng test"
     },
     "private": true,
+    "browser": {
+        "crypto": false
+    },
     "dependencies": {
         "@angular/animations": "^16.2.0",
         "@angular/cdk": "^16.2.8",
