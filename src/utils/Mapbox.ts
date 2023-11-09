@@ -1,11 +1,54 @@
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 type ctrlGroup = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+type ctrlType = "line_string" | "polygon";
+
+class control {
+    "id": "gl-draw-line";
+    "type": "line";
+    "filter": (string | [string, string, string])[];
+}
+
+class controlLine extends control {
+    override readonly "id" = "gl-draw-line";
+    override readonly "type" = "line";
+    "layout"?: {
+        "line-cap"?: "round";
+        "line-join"?: "round";
+    };
+    "paint"?: {
+        "line-color"?: string,
+        "line-dasharray"?: [number, number],
+        "line-width"?: number,
+    }
+}
+
+class controlPolygon extends controlLine {
+
+}
+
 class drawOptions {
     displayControlsDefault: boolean | undefined = false;
     defaultMode: "draw_line_string" | "draw_polygon" | undefined = "draw_line_string";
 }
-type drawControl = {control: "line_string" | "polygon"}
+
+class drawControl {
+}
+
+class drawControlLine extends drawControl {
+//    override readonly control = "line_string" as const;
+    color?: string;
+    colorInactive?: string;
+    dashArray?: readonly [number, number];
+    dashArrayInactive?: readonly [number, number];
+    width?: number;
+    widthInactive?: number;
+}
+
+class drawControlPolygon extends drawControlLine {
+
+}
 
 export const MB = {
     addSubgroup: (grp: ctrlGroup = "top-right") => {
@@ -43,84 +86,75 @@ export const MB = {
         const styles:  object[] = [];
 
         drawControl.forEach(ctrl => {
-            controls[ctrl.control] = true;
-            switch(ctrl.control) { 
+
+            const type: ctrlType = ctrl instanceof drawControlLine ? "line_string" : "polygon"
+            controls[type] = true;
+            switch(type) { 
                 case "line_string": { 
-                   styles.push(drawLine())
+                   styles.push(drawLine(ctrl))
                    break; 
                 } 
                 default: { 
-                    styles.push(drawPolygon())
+                    styles.push(drawPolygon(ctrl))
                 } 
              } 
             styles.push()
         })
-    }
-
-
-   
+    }  
 }
 
-
 // line stroke
-const drawLine = () => ([
-    {   // ACTIVE (being drawn)
-        "id": "gl-draw-line",
-        "type": "line",
-        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
-        // "layout": {
-        //     "line-cap": "round",
-        //     "line-join": "round"
-        // },
-        //"paint": {
-        //     "line-color": "#D20C0C",
-        //    "line-dasharray": [0.2, 2],
-        //     "line-width": 3,
-        //}
-    },
-    {// INACTIVE (static, already drawn)
-        "id": "gl-draw-line",
-        "type": "line",
-        "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
-        // "layout": {
-        //     "line-cap": "round",
-        //     "line-join": "round"
-        // },
-        //"paint": {
-        //     "line-color": "#D20C0C",
-        //    "line-dasharray": [0.2, 2],
-        //     "line-width": 3,
-        //}
+const drawLine = (ctrl: drawControlLine) => {
+    const output: controlLine[] = [
+        {   // ACTIVE (being drawn)
+            "id": "gl-draw-line",
+            "type": "line",
+            "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+            // "layout": {
+            //     "line-cap": "round",
+            //     "line-join": "round"
+            // },
+            //"paint": {
+            //     "line-color": "#D20C0C",
+            //    "line-dasharray": [0.2, 2],
+            //     "line-width": 3,
+            //}
+        },
+        {// INACTIVE (static, already drawn)
+            "id": "gl-draw-line",
+            "type": "line",
+            "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
+            // "layout": {
+            //     "line-cap": "round",
+            //     "line-join": "round"
+            // },
+            //"paint": {
+            //     "line-color": "#D20C0C",
+            //    "line-dasharray": [0.2, 2],
+            //     "line-width": 3,
+            //}
+        }
+    ];
+    console.log(output[0])
+    if (ctrl.color){
+        output[0].paint = {"line-color": ctrl.color}; // Active
+        output[1].paint = {"line-color": ctrl.color}; // Inactive
     }
-]);
+    if (ctrl.colorInactive){
+        output[1].paint = {"line-color": ctrl.colorInactive}; // Inactive
+    }
+    return output
+};
 
 const drawPolygon = () => ([
-
-]);
-
-new MapboxDraw({
-    // other draw options here
-    // ...
-    displayControlsDefault: false,
-    // Select which mapbox-gl-draw control buttons to add to the map.
-    controls: {
-        line_string: true,
-        polygon: true,
-        trash: true,
-    },
-    // Set mapbox-gl-draw to draw by default.
-    // The user does not have to click the polygon control button first.
-    defaultMode: "draw_line_string",
-
-    // styles here
-    // ...
-    styles: [
         // ACTIVE (being drawn)
         // polygon fill
         {
             "id": "gl-draw-polygon-fill",
             "type": "fill",
-            "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+            "filter": ["all", 
+                ["==", "$type", "Polygon"], 
+                ["!=", "mode", "static"]],
             "paint": {
                 "fill-color": "#D20C0C",
                 "fill-outline-color": "#D20C0C",
@@ -216,5 +250,25 @@ new MapboxDraw({
                 "line-width": 10
             }
         }
+
+]);
+
+new MapboxDraw({
+    // other draw options here
+    // ...
+    displayControlsDefault: false,
+    // Select which mapbox-gl-draw control buttons to add to the map.
+    controls: {
+        line_string: true,
+        polygon: true,
+        trash: true,
+    },
+    // Set mapbox-gl-draw to draw by default.
+    // The user does not have to click the polygon control button first.
+    defaultMode: "draw_line_string",
+
+    // styles here
+    // ...
+    styles: [
     ]
 });
