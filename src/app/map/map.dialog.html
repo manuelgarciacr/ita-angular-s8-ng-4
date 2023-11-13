@@ -1,12 +1,25 @@
 <h1 mat-dialog-title>{{data.action}}</h1>
 <div mat-dialog-content>
-    <p>What's your favorite animal?</p>
     <mat-form-field>
-        <mat-label>Collection name</mat-label>
+        <!-- <mat-label>Collection name</mat-label>
         <input matInput [(ngModel)]="data.name">
+        <mat-label>Collection name</mat-label>
+        <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto"> -->
+        <mat-label>Collection name</mat-label>
+            <input type="text" matInput [formControl]="featureCtrl" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                {{option.name}}
+              </mat-option>
+            </mat-autocomplete>
+          <!-- <mat-select>
+            <mat-option *ngFor="let feature of data.features" [value]="feature._id">
+              {{feature.name}}
+            </mat-option>
+          </mat-select> -->
     </mat-form-field>
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()">Cancel</button>
-    <button mat-button [mat-dialog-close]="data.name" cdkFocusInitial>Ok</button>
+    <button mat-button [mat-dialog-close]="featureCtrl.value" cdkFocusInitial>Ok</button>
 </div>

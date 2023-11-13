@@ -3,7 +3,7 @@ import { FeatureCollection } from "geojson";
 
 type ctrlGroup = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-type ctrlType = "line_string" | "polygon" | "trash";
+type ctrlType = "line_string" | "polygon" | "point" | "trash";
 
 class Control {
     "id": string;
@@ -24,14 +24,17 @@ class ControlLine extends Control {
     };
 }
 
-// class ControlPolygon extends Control {
+class ControlPolygon extends Control {
 
-// }
+}
 
+class ControlPoint extends Control {
+
+}
 class DrawOptions implements MapboxDrawOptions {
     boxSelect: undefined;
     displayControlsDefault: boolean | undefined = false;
-    defaultMode: "draw_line_string" | "draw_polygon" | undefined = "draw_line_string";
+    defaultMode: "draw_line_string" | "draw_polygon" | "draw_point" | "simple_select" | undefined = "simple_select";
     controls: MapboxDrawControls | undefined;
     styles?: object[] | undefined;
 }
@@ -53,6 +56,8 @@ export class DrawControlLine extends DrawControl {
 }
 
 export class DrawControlPolygon extends DrawControl {}
+
+export class DrawControlPoint extends DrawControl {}
 
 export class DrawControlTrash extends DrawControl {}
 
@@ -98,6 +103,7 @@ export const MB = {
 
             const type: ctrlType =
                 ctrl instanceof DrawControlLine ? "line_string" :
+                ctrl instanceof DrawControlPoint ? "point" :
                 ctrl instanceof DrawControlTrash ? "trash" :
                 "polygon";
 

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Inject, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
+import { CommonModule, NgFor, AsyncPipe } from "@angular/common";
 import { FeatureComponent, NgxMapboxGLModule } from "ngx-mapbox-gl";
 import { environment } from "src/environments/environment";
 import mapboxgl, { LngLat, Map as MbMap } from "mapbox-gl";
@@ -8,17 +8,20 @@ import mapboxgl, { LngLat, Map as MbMap } from "mapbox-gl";
 // import { start } from "@popperjs/core";
 // import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // import * as turf from '@turf/turf';
-import { DrawControlLine, DrawControlPolygon, DrawControlTrash, MB, feat } from "src/utils/Mapbox";
+import { DrawControlLine, DrawControlPoint, DrawControlPolygon, DrawControlTrash, MB, feat } from "src/utils/Mapbox";
 import MapboxDraw, {
     MapboxDrawOptions
 } from "@mapbox/mapbox-gl-draw";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import { FormsModule } from "@angular/forms";
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { FeaturesRepoService } from "src/infrastructure/repositories/features-repo.service";
 import { IFeatCol } from "src/domain/model/IFeatCol";
+import { MatSelectModule } from "@angular/material/select";
+import { Observable, startWith, map, async } from "rxjs";
 
 const SAVE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>'
 const REFRESH_ICON = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>';
@@ -26,12 +29,18 @@ const REFRESH_ICON = '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBo
 export interface DialogData {
     action: string;
     name: string;
-    names: string[];
+    features: IFeatCol[];
 }
 
 let lngLat: LngLat = new LngLat(2.154007, 41.390205);
-let map: MbMap;
-
+let mbMap: MbMap;
+const draw = MB.createDraw(
+    undefined,
+    new DrawControlLine(),
+    new DrawControlPolygon(),
+    new DrawControlPoint(),
+    new DrawControlTrash()
+);
 // let draw = new MapboxDraw({
 //     displayControlsDefault: false,
 //     // Select which mapbox-gl-draw control buttons to add to the map.
@@ -59,7 +68,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         mapboxgl.accessToken = environment.mapbox;
-        map = new mapboxgl.Map({
+        mbMap = new mapboxgl.Map({
             container: "map",
             style: "mapbox://styles/mapbox/streets-v12",
             center: lngLat,
@@ -67,34 +76,34 @@ export class MapComponent implements OnInit, AfterViewInit {
         });
         navigator.geolocation.watchPosition(res => {
             lngLat = new LngLat(res.coords.longitude, res.coords.latitude);
-            map.setCenter(lngLat);
+            mbMap.setCenter(lngLat);
         });
 
         /* map.on('draw.create', this.updateArea);
         map.on('draw.delete', this.updateArea);
         map.on('draw.update', this.updateArea); */
+        
         this.repo.getFeatures().subscribe(resp => (this.features = resp.data));
     }
 
     ngAfterViewInit(): void {
-        const draw = MB.createDraw(
-            undefined,
-            new DrawControlLine(),
-            new DrawControlPolygon(),
-            new DrawControlTrash()
-        );
+        
         const draw2 = new MapboxDraw({
-            controls: { line_string: true, polygon: false },
+            controls: { line_string: true, polygon: true,  point: true},
         });
         console.log("DRAW", draw);
-        map.addControl(draw, "top-right");
+        mbMap.addControl(draw, "top-right");
 
         const subGrp = MB.addSubgroup();
         MB.addBtn(subGrp, SAVE_ICON, "Save", () => {
             const data = draw.getAll();
 
-            this.openDialog("Save", () => {
-                console.log(this.name)
+            this.openDialog("Save", this.features, () => {
+                console.log("NAME", this.name, "*", data.features)
+                if ((this.name ?? "") == "")
+                    return;
+                if (data.features.length == 0)
+                    return;
                 this.repo.addFeature({name: this.name, feature: data}).subscribe(resp => {
                     console.log("RRRR", resp)
                 })
@@ -178,9 +187,9 @@ export class MapComponent implements OnInit, AfterViewInit {
         }
     } */
 
-    openDialog(action: string, callback: ()=>void): void {
+    openDialog(action: string, features: IFeatCol[], callback: ()=>void): void {
         const dialogRef = this.dialog.open(MapDialog, {
-            data: { name: this.name, action: action },
+            data: { name: this.name, features: features, action: action },
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -199,17 +208,49 @@ export class MapComponent implements OnInit, AfterViewInit {
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSelectModule,
+        MatAutocompleteModule,
         FormsModule,
+        NgFor,
+        AsyncPipe,
         MatButtonModule,
+        ReactiveFormsModule,
     ],
 })
 export class MapDialog {
+    featureCtrl = new FormControl<string | IFeatCol>('');
+    options: IFeatCol[];
+    filteredOptions!: Observable<IFeatCol[]>;
+
     constructor(
         public dialogRef: MatDialogRef<MapDialog>,
         @Inject(MAT_DIALOG_DATA) public data: DialogData
-    ) {}
+    ) {
+        this.options = data.features
+    }
+
+    ngOnInit() {
+        this.filteredOptions = this.featureCtrl.valueChanges.pipe(
+            startWith(''),
+            map(value => {
+              const name = typeof value === 'string' ? value : value?.name;
+              return name ? this._filter(name as string) : this.options.slice();
+            }),
+          );
+    }
 
     onNoClick(): void {
         this.dialogRef.close();
+    }
+
+    displayFn(feature: IFeatCol): string {
+        console.log("DSP", feature, "*", feature && feature.name ? feature.name : '', "*")
+        return feature && feature.name ? feature.name : '';
+    }
+    
+    private _filter(name: string): IFeatCol[] {
+        const filterValue = name.toLowerCase();
+
+        return this.options.filter(option => option.name.toLowerCase().includes(filterValue));
     }
 }

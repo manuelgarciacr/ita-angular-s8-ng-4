@@ -1,5 +1,4 @@
 mgl-map {
-    height: 100%;
     width: 100%;
 }
 
@@ -10,7 +9,8 @@ body {
 
 #map {
     position: absolute;
+    width: 100%;
     top: 0;
     bottom: 0;
-    width: 100%;
+    margin-top: 4rem;
 }
