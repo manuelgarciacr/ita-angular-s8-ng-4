@@ -27,6 +27,8 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
 
     constructor() {
         this.http = inject(HttpClient);
+        console.log("CONSTR")
+        this.http.post(this.url, {})
     }
 
     get = (arg?: string | Params): Observable<resp<T>> => {
@@ -49,22 +51,23 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
                 catchError(this.handleError<T>("http get"))
             );
 
-    put = (user: T) => {
+    put = (data: T) => {
         return this.http
-            .put<resp<T>>(this.url, user, httpOptions)
+            .put<resp<T>>(this.url, data, httpOptions)
             .pipe(
                 retry({ count: 2, delay: this.shouldRetry }),
                 catchError(this.handleError<T>("http put"))
             );
     };
 
-    post = (user: T) => {
+    post = (data: T) => {
+        console.log("UUUUUUuu", this.url, data);
         return this.http
-            .post<resp<T>>(this.url, user, httpOptions)
-            .pipe(
-                retry({ count: 2, delay: this.shouldRetry }),
-                catchError(this.handleError<T>("http post"))
-            );
+            .post<resp<T>>(this.url, data, httpOptions)
+            // .pipe(
+            //     retry({ count: 2, delay: this.shouldRetry }),
+            //     catchError(this.handleError<T>("http post"))
+            // );
     };
 
     delete = (id: string) => {

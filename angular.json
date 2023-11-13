@@ -54,7 +54,17 @@
                             "src/styles.scss",
                             "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "allowedCommonJsDependencies" : [
+                            "mapbox-gl",
+                            "bcryptjs",
+                            "@mapbox/mapbox-gl-draw",
+                            "@turf/*",
+                            "write-excel-file",
+                            "ngx-mapbox-gl",
+                            "jszip",
+                            "file-saver"
+                        ]
                     },
                     "configurations": {
                         "production": {

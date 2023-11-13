@@ -14,7 +14,7 @@ export interface IDataAdapter<T> {
     url: string;
 
     get: (arg?: string | Params) => Observable<resp<T>>; // Get all
-    put: (user: T) => Observable<resp<T>>;
+    put: (data: T) => Observable<resp<T>>;
     post: (data: T) => Observable<resp<T>>;
     delete: (id: string) => Observable<resp<T>>;
 }
