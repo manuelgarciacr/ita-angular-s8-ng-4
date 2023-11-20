@@ -19,6 +19,7 @@ export class UsersRepoService {
         //let a = inject(new HttpAdapter<IUser>());
         this.dataSource = inject(HttpAdapter<IUser>);
         this.dataSource.url = `${environment.url}/users`;
+        console.log("HREPOSTORIEFUSERSCONSTRUCTOR");
     }
 
     // getUsers = () => {

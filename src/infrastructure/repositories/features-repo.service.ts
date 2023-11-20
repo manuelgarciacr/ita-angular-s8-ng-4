@@ -18,6 +18,7 @@ export class FeaturesRepoService {
         //let a = inject(new HttpAdapter<IUser>());
         this.dataSource = inject(HttpAdapter<IFeatCol>);
         this.dataSource.url = `${environment.url}/features`;
+        console.log("HREPOSTORIEFEATURESCONSTRUCTOR");
     }
 
     // getUsers = () => {
@@ -25,8 +26,8 @@ export class FeaturesRepoService {
     //         this._users = users.data;
     //     });
     // }
-    getFeatures = (arg?: string | Params) => this.dataSource.get(arg);
-    //putUser = (user: IUser) => this.dataSource.put(user);
+    getFeature = (arg?: string | Params) => this.dataSource.get(arg);
+    putFeature = (feature: IFeatCol) => this.dataSource.put(feature);
     addFeature = (feature: IFeatCol) => this.dataSource.post(feature);
     deleteFeature = (id: string) => this.dataSource.delete(id);
 }

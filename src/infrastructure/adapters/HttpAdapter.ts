@@ -26,9 +26,10 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
     url = "";
 
     constructor() {
+        console.log("HTTPADAPTERCONSTRUCTOR", this.url)
         this.http = inject(HttpClient);
-        console.log("CONSTR")
-        this.http.post(this.url, {})
+        // console.log("CONSTR")
+        // this.http.post(this.url, {})
     }
 
     get = (arg?: string | Params): Observable<resp<T>> => {
