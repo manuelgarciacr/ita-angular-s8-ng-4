@@ -24,13 +24,14 @@ class ControlLine extends Control {
     };
 }
 
-class ControlPolygon extends Control {
+// class ControlPolygon extends Control {
 
-}
+// }
 
-class ControlPoint extends Control {
+// class ControlPoint extends Control {
 
-}
+// }
+
 class DrawOptions implements MapboxDrawOptions {
     boxSelect: undefined;
     displayControlsDefault: boolean | undefined = false;
@@ -134,8 +135,6 @@ export const MB = {
         })
         // mbOptions.controls = controls;
         // mbOptions.styles = styles;
-        console.log("OPTIONS", styles);
-        console.log("mapbox-gl-draw-hot");
         const mbd = new MapboxDraw({...mbOptions, controls: controls, styles: styles});
 
         return mbd

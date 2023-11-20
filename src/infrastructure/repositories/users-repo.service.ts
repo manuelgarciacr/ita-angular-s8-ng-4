@@ -3,32 +3,21 @@ import { IDataAdapter, Params } from "../adapters/IDataAdapter";
 import { environment } from "src/environments/environment";
 import { HttpAdapter } from "../adapters/HttpAdapter";
 import { IUser } from "../../domain/model/IUser";
-//import { HttpClient } from "@angular/common/http";
+
+const URL = `${environment.url}/users`;
 
 @Injectable({
     providedIn: "root",
 })
 export class UsersRepoService {
-    private dataSource: IDataAdapter<IUser>;
+    private dataSource: IDataAdapter<IUser> = inject(HttpAdapter<IUser>);
     private _users: IUser[] = [];
     get users(): IUser[] {
         return this._users;
     }
 
-    constructor() {
-        //let a = inject(new HttpAdapter<IUser>());
-        this.dataSource = inject(HttpAdapter<IUser>);
-        this.dataSource.url = `${environment.url}/users`;
-        console.log("HREPOSTORIEFUSERSCONSTRUCTOR");
-    }
-
-    // getUsers = () => {
-    //     this.dataSource.get().subscribe(users => {
-    //         this._users = users.data;
-    //     });
-    // }
-    getUsers = (arg?: string | Params) => this.dataSource.get(arg);
-    putUser = (user: IUser) => this.dataSource.put(user);
-    addUser = (user: IUser) => this.dataSource.post(user);
-    deleteUser = (id: string) => this.dataSource.delete(id);
+    getUsers = (arg?: string | Params) => this.dataSource.get(URL, arg);
+    putUser = (user: IUser) => this.dataSource.put(URL, user);
+    addUser = (user: IUser) => this.dataSource.post(URL, user);
+    deleteUser = (id: string) => this.dataSource.delete(URL, id);
 }

@@ -1,22 +1,13 @@
 <h1 mat-dialog-title>{{data.action}}</h1>
 <div mat-dialog-content>
     <mat-form-field>
-        <!-- <mat-label>Collection name</mat-label>
-        <input matInput [(ngModel)]="data.name">
-        <mat-label>Collection name</mat-label>
-        <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto"> -->
         <mat-label>Collection name</mat-label>
         <input type="text" matInput [formControl]="featureCtrl" [matAutocomplete]="auto">
-        <mat-autocomplete  requireSelection="data.action == 'Load'" #auto="matAutocomplete" [displayWith]="displayFn">
+        <mat-autocomplete [requireSelection]="data.action == 'Load'" #auto="matAutocomplete" [displayWith]="displayFn">
             <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
                 {{ option.name }}
             </mat-option>
         </mat-autocomplete>
-          <!-- <mat-select>
-            <mat-option *ngFor="let feature of data.features" [value]="feature._id">
-              {{feature.name}}
-            </mat-option>s
-          </mat-select> -->
     </mat-form-field>
 </div>
 <div mat-dialog-actions>

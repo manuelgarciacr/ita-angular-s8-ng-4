@@ -11,11 +11,10 @@ export type Params = {
 };
 
 export interface IDataAdapter<T> {
-    url: string;
 
-    get: (arg?: string | Params) => Observable<resp<T>>; // Get all
-    put: (data: T) => Observable<resp<T>>;
-    post: (data: T) => Observable<resp<T>>;
-    delete: (id: string) => Observable<resp<T>>;
+    get: (url: string, arg?: string | Params) => Observable<resp<T>>; // Get all
+    put: (url: string, data: T) => Observable<resp<T>>;
+    post: (url: string, data: T) => Observable<resp<T>>;
+    delete: (url: string, id: string) => Observable<resp<T>>;
 }
 
