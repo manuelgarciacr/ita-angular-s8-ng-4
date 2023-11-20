@@ -6,7 +6,7 @@ import {
     HttpHeaders,
     HttpParams,
 } from '@angular/common/http';
-import { Injectable, inject } from "@angular/core";
+import { Inject, Injectable, InjectionToken, inject } from "@angular/core";
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -26,7 +26,7 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
     url = "";
 
     constructor() {
-        console.log("HTTPADAPTERCONSTRUCTOR", this.url)
+        console.log("HTTPADAPTERCONSTRUCTOR", this.url);
         this.http = inject(HttpClient);
         // console.log("CONSTR")
         // this.http.post(this.url, {})
@@ -63,12 +63,11 @@ export class HttpAdapter<T> implements IDataAdapter<T> {
 
     post = (data: T) => {
         console.log("UUUUUUuu", this.url, data);
-        return this.http
-            .post<resp<T>>(this.url, data, httpOptions)
-            // .pipe(
-            //     retry({ count: 2, delay: this.shouldRetry }),
-            //     catchError(this.handleError<T>("http post"))
-            // );
+        return this.http.post<resp<T>>(this.url, data, httpOptions);
+        // .pipe(
+        //     retry({ count: 2, delay: this.shouldRetry }),
+        //     catchError(this.handleError<T>("http post"))
+        // );
     };
 
     delete = (id: string) => {

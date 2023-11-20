@@ -1,8 +1,10 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, InjectionToken, inject } from "@angular/core";
 import { IDataAdapter, Params } from "../adapters/IDataAdapter";
 import { environment } from "src/environments/environment";
 import { HttpAdapter } from "../adapters/HttpAdapter";
 import { IFeatCol } from "src/domain/model/IFeatCol";
+
+export const FEATURES_URL_TOKEN = new InjectionToken<string>("FEATURES_URL_TOKEN");
 
 @Injectable({
     providedIn: "root",
