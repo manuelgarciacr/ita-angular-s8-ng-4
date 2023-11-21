@@ -18,18 +18,13 @@ import { FeaturesRepoService } from "src/infrastructure/repositories/features-re
 import { IFeatCol } from "src/domain/model/IFeatCol";
 import { first } from "rxjs";
 import { Dialog2Component } from "src/infrastructure/components/dialog2/dialog2.component";
-import { MapDialog } from "./map.dalog/map.dialog";
+import { MapDialog } from "./map.dialog/map.dialog";
+import { DialogData } from "./map.dialog/map.dialog";
 
 const SAVE_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>';
 const DOWNLOAD_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>';
-
-export interface DialogData {
-    action: string;
-    name: string;
-    features: IFeatCol[];
-}
 
 let lngLat: LngLat = new LngLat(2.154007, 41.390205);
 let mbMap: MbMap;

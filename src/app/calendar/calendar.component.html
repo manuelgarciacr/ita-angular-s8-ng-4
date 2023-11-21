@@ -1,0 +1,7 @@
+
+<full-calendar class="mt-5" [options]="calendarOptions" [events]="eventsPromise | async">
+    <ng-template #eventContent let-arg class="d-flex">
+        <b>{{arg.timeText}}</b>
+        <i class="ms-2">{{arg.event.title}}</i>
+    </ng-template>
+</full-calendar>

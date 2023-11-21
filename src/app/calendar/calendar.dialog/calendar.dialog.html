@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>{{data.action}}</h1>
+<div mat-dialog-content>
+    <mat-form-field>
+        <mat-label>Event name</mat-label>
+        <input type="text" matInput [formControl]="control" [matAutocomplete]="auto">
+        <mat-autocomplete [requireSelection]="data.action == 'Load'" #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                {{ option.name }}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="name(control.value!)" cdkFocusInitial>No</button>
+    <button mat-button [mat-dialog-close]="name(control.value!)" cdkFocusInitial>Ok</button>
+</div>

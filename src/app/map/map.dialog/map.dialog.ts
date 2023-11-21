@@ -9,7 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Observable, startWith, map } from 'rxjs';
 import { IFeatCol } from 'src/domain/model/IFeatCol';
-import { DialogData } from '../map.component';
+
+export interface DialogData {
+    action: string;
+    name: string;
+    features: IFeatCol[];
+}
 
 @Component({
     selector: "map-dialog",
