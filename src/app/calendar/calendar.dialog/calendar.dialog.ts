@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,6 +28,7 @@ export interface DialogData {
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatCheckboxModule,
         MatAutocompleteModule,
         MatIconModule,
         FormsModule,
@@ -52,24 +54,26 @@ export class CalendarDialog {
             // updatedAt: new FormControl(""),
             // createdAt: new FormControl(""),
             // __v: new FormControl(""),
-            title: new FormControl("", {
+            title: new FormControl(this.data.item.title, {
                 validators: [Validators.required],
             }),
-            text: new FormControl("", {
+            text: new FormControl(this.data.item.text, {
                 validators: [Validators.required],
             }),
-            date: new FormControl(""),
+            date: new FormControl(
+                this.data.item.date.toLocaleString("es-ES").replace(/,.*$/, "")
+            ),
+            delete:
+                this.data.action === "Modify"
+                    ? new FormControl(false)
+                    : undefined,
         };
         this.fg = this.formBuilder.group(formGroup);
-        console.log(
-            "RRRRRRRRRRRRR",
-            this.data.item.date.toLocaleString("es-ES")
-        );
-        this.fg
-            .get("date")
-            ?.setValue(
-                this.data.item.date.toLocaleString("es-ES").replace(/,.*$/, "")
-            );
+        // this.fg
+        //     .get("date")
+        //     ?.setValue(
+        //         this.data.item.date.toLocaleString("es-ES").replace(/,.*$/, "")
+        //     );
         if (this.data.action == "Delete") {
             this.formDisabled = true;
         }

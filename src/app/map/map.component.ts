@@ -66,7 +66,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             mbMap.setCenter(lngLat);
         });
 
-        this.repo.getFeature().subscribe(resp => (this.features = resp.data));
+        this.repo.getFeatures().subscribe(resp => (this.features = resp.data));
     }
 
     ngAfterViewInit(): void {
@@ -150,7 +150,7 @@ export class MapComponent implements OnInit, AfterViewInit {
                         if (resp != "yes") return;
 
                         this.repo
-                            .getFeature({ name: this.name })
+                            .getFeatures({ name: this.name })
                             .pipe(first())
                             .subscribe(resp => {
                                 draw.deleteAll();

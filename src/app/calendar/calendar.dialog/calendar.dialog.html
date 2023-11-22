@@ -30,7 +30,7 @@
             <mat-label>Title</mat-label>
             <input type="text" matInput [readonly]="formDisabled" [formControl]="getCtrl('title')"
                 placeholder="Title" aria-describedby="titleHelp" autocomplete="off">
-            <button type="button" *ngIf="isSet('title')" matSuffix mat-icon-button aria-label="Clear"
+            <button type="button" [class.invisible]="!isSet('title')" matSuffix mat-icon-button aria-label="Clear"
                 [disabled]="formDisabled" (click)="set('title', '')">
                 <mat-icon>close</mat-icon>
             </button>
@@ -43,7 +43,7 @@
             <mat-label>Text</mat-label>
             <input type="text" matInput [readonly]="formDisabled" [formControl]="getCtrl('text')"
                 placeholder="Text" aria-describedby="textHelp" autocomplete="off">
-            <button type="button" *ngIf="isSet('text')" matSuffix mat-icon-button aria-label="Clear"
+            <button type="button" [class.invisible]="!isSet('text')" matSuffix mat-icon-button aria-label="Clear"
                 [disabled]="formDisabled" (click)="set('text', '')">
                 <mat-icon>close</mat-icon>
             </button>
@@ -65,6 +65,16 @@
             </div>
             <!-- <mat-error *ngIf="getError('date')">{{getError('date')}}</mat-error> -->
         </mat-form-field>
+        <!-- <mat-form-field *ngIf="data.action == 'Modify'" class="w-100">
+            <mat-label>Delete</mat-label> -->
+        <div *ngIf="data.action == 'Modify'" class="w-100">
+            <mat-checkbox matInput [formControl]="getCtrl('delete')" placeholder="Delete"
+                aria-describedby="deleteHelp" autocomplete="off">Delete</mat-checkbox>
+            <div id="deleteHelp" class="form-text d-none">
+                If checked the event will be deleted.
+            </div>
+        </div>
+        <!-- </mat-form-field> -->
     </form>
 </mat-dialog-content>
 <mat-dialog-actions class="pb-4 pe-5" align="end">

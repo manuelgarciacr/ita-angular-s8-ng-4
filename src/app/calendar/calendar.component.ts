@@ -39,35 +39,37 @@ export class CalendarComponent implements OnInit{
         //     CalendarComponent.openDialog("Add", {});
         // },
         select: this.onSelect.bind(this),
-        //eventClick: this.onEventClick.bind(this),
+        eventClick: this.onEventClick.bind(this),
         // events: [{ title: "Meeting", start: new Date() }],
     };
     protected item: string | IEvent = "";
 
     ngOnInit(): void {
-        this.repo.getEvent().subscribe(
-            events => events.data.forEach(v => {
-                this.events.push(v);
-                const calendarApi = selectInfo.view.calendar;
+        this.repo.getEvents().pipe(first()).subscribe(
+            events => {
+                events.data.forEach(v => {
+                    this.events.push(v);
+                //const calendarApi = selectInfo.view.calendar;
 
-                calendarApi.unselect(); // clear date selection
+                // calendarApi.unselect(); // clear date selection
 
-                //if (resp.data[0].title) {
-                //const DATE_STR = resp.data[0].date
-                //.toISOString()
-                //.replace(/T.*$/, ""); // YYYY-MM-DD of date
-                this.calendarOptions.eventAdd()
-                calendarApi.addEvent({
-                    id: String(this.events.length),
-                    title: v.title,
-                    start: v.date,
-                    allDay: true,
-                    // end: selectInfo.endStr,
-                    // allDay: selectInfo.allDay,
+                // calendarApi.addEvent({
+                //     id: String(this.events.length),
+                //     title: v.title,
+                //     start: v.date,
+                //     allDay: true,
+                // });
                 });
-            })
+                this.calendarOptions.events = this.events.map((ev, idx) => ({
+                    id: String(idx + 1),
+                    title: ev.title,
+                    start: ev.date.toLocaleString("sv-SE").replace(/ .*$/, ""), // YYYY-MM-DD of today
+                    text: ev.text,
+                    _id: ev._id
+                }));
+            }
         );
-        console.log("EVEVEV", this.events)
+
     }
 
     private onSelect(selectInfo: DateSelectArg) {
@@ -76,6 +78,9 @@ export class CalendarComponent implements OnInit{
             "Add",
             { title: "", date: selectInfo.start, text: "" }, // YYYY-MM-DD of date
             resp => {
+                console.log("RESP01", resp)
+                if (resp == "")
+                    return;
                 this.repo
                     .addEvent(resp as IEvent)
                     .pipe(first())
@@ -84,7 +89,7 @@ export class CalendarComponent implements OnInit{
                             console.log(resp);
                             return;
                         }
-                        console.log("RESP", resp.data[0].date);
+                        console.log("RESP02", resp.data[0].date);
                         const calendarApi = selectInfo.view.calendar;
 
                         calendarApi.unselect(); // clear date selection
@@ -98,6 +103,8 @@ export class CalendarComponent implements OnInit{
                             title: resp.data[0].title,
                             start: resp.data[0].date,
                             allDay: true,
+                            _id: resp.data[0]._id,
+                            text: resp.data[0].text
                             // end: selectInfo.endStr,
                             // allDay: selectInfo.allDay,
                         });
@@ -107,44 +114,60 @@ export class CalendarComponent implements OnInit{
         );
     }
 
-    /* private onEventClick(clickInfo: EventClickArg) {
-        const id = clickInfo.event.id
-        console.log("CLKCLKCLK", clickInfo.event.id
+    private onEventClick(clickInfo: EventClickArg) {
+        const id = clickInfo.event.id;
+        const event = this.events;
+        console.log("CLKCLKCLK", clickInfo.event._def, event, {
+            title: clickInfo.event._def.title,
+            date: clickInfo.event.start!,
+            text: clickInfo.event._def.extendedProps["text"],
+        });
         this.openDialog(
-            "Delete",
-            { title: clickInfo.view.title, date: clickInfo.event.start!, text: "" }, // YYYY-MM-DD of date
+            "Modify",
+            {
+                title: clickInfo.event._def.title,
+                date: clickInfo.event.start!,
+                text: clickInfo.event._def.extendedProps['text'],
+            }, // YYYY-MM-DD of date
             resp => {
+                const modifyResp = resp as IEvent & { delete?: boolean };
+                delete modifyResp["delete"];
+                modifyResp._id = clickInfo.event._def.extendedProps["_id"];
+                console.log("RESP01", modifyResp as IEvent);
                 this.repo
-                    .addEvent(resp as IEvent)
+                    .putEvent(modifyResp as IEvent)
                     .pipe(first())
                     .subscribe(resp => {
                         if (resp.status != 200) {
                             console.log(resp);
                             return;
                         }
-                        console.log("RESP", resp.data[0].date);
-                        const calendarApi = selectInfo.view.calendar;
+                        console.log("RESP02", resp);
+                        const calendarApi = clickInfo.view.calendar;
 
                         calendarApi.unselect(); // clear date selection
-
-                        //if (resp.data[0].title) {
-                        //const DATE_STR = resp.data[0].date
-                        //.toISOString()
-                        //.replace(/T.*$/, ""); // YYYY-MM-DD of date
-                        calendarApi.addEvent({
-                            id: String(++this.id),
-                            title: resp.data[0].title,
-                            start: resp.data[0].date,
-                            allDay: true,
-                            // end: selectInfo.endStr,
-                            // allDay: selectInfo.allDay,
-                        });
-                        //}
+                        calendarApi
+                            .getEventById(id)?.setProp("title", modifyResp.title);
+                        calendarApi
+                            .getEventById(id)?.setExtendedProp("text", modifyResp.text);
+                        //         //if (resp.data[0].title) {
+                        //         //const DATE_STR = resp.data[0].date
+                        //         //.toISOString()
+                        //         //.replace(/T.*$/, ""); // YYYY-MM-DD of date
+                        //         calendarApi.addEvent({
+                        //             id: String(++this.id),
+                        //             title: resp.data[0].title,
+                        //             start: resp.data[0].date,
+                        //             allDay: true,
+                        //             // end: selectInfo.endStr,
+                        //             // allDay: selectInfo.allDay,
+                        //         });
+                        //         //}
                     });
             }
         );
     }
- */
+
     private openDialog = (
         action: string,
         item: IEvent,

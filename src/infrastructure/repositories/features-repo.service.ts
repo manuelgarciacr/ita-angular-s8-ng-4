@@ -3,6 +3,7 @@ import { IDataAdapter, Params } from "../adapters/IDataAdapter";
 import { environment } from "src/environments/environment";
 import { HttpAdapter } from "../adapters/HttpAdapter";
 import { IFeatCol } from "src/domain/model/IFeatCol";
+import { map } from "rxjs";
 
 const URL = `${environment.url}/features`;
 
@@ -16,7 +17,7 @@ export class FeaturesRepoService {
         return this._features;
     }
 
-    getFeature = (arg?: string | Params) => this.dataSource.get(URL, arg);
+    getFeatures = (arg?: string | Params) => this.dataSource.get(URL, arg);
     putFeature = (feature: IFeatCol) => this.dataSource.put(URL, feature);
     addFeature = (feature: IFeatCol) => this.dataSource.post(URL, feature);
     deleteFeature = (id: string) => this.dataSource.delete(URL, id);
