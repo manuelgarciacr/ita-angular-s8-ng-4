@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 export const appConfig: ApplicationConfig = {
+
     providers: [
         provideRouter(routes),
         provideAnimations(),

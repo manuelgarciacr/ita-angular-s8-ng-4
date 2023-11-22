@@ -1,7 +1,8 @@
-
-<full-calendar class="mt-5" [options]="calendarOptions">
-    <ng-template #eventContent let-arg class="d-flex">
-        <b>{{arg.timeText}}</b>
-        <i class="ms-2">{{arg.event.title}}</i>
-    </ng-template>
-</full-calendar>
+<div class="mt-5 col-10 offset-1">
+    <full-calendar [options]="calendarOptions">
+        <ng-template #eventContent let-arg class="d-flex">
+            <b>{{arg.timeText}}</b>
+            <i class="ms-2">{{arg.event.title}}</i>
+        </ng-template>
+    </full-calendar>
+</div>

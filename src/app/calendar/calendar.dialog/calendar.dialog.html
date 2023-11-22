@@ -1,21 +1,3 @@
-<!-- <h1 mat-dialog-title>{{data.action}}</h1>
-<div mat-dialog-content>
-    <mat-form-field>
-        <mat-label>Event name</mat-label>
-        <input type="text" matInput [formControl]="control" [matAutocomplete]="auto">
-        <mat-autocomplete [requireSelection]="data.action == 'Load'" #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                {{ option.name }}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
-</div>
-<div mat-dialog-actions>
-    <button mat-button (click)="onNoClick()">Cancel</button>
-    <button mat-button [mat-dialog-close]="name(control.value!)" cdkFocusInitial>No</button>
-    <button mat-button [mat-dialog-close]="name(control.value!)" cdkFocusInitial>Ok</button>
-</div> -->
-
 <div mat-dialog-title class="dialog-title d-flex justify-content-between mt-3">
 
     <h2>{{data.action}} event</h2>
@@ -23,6 +5,7 @@
         <mat-icon>close</mat-icon>
     </button>
 </div>
+
 <mat-dialog-content>
 
     <form [formGroup]="fg" class="was-validated bg-light text-bg-light rounded-4 p-5">
@@ -56,17 +39,10 @@
             <mat-label>Date</mat-label>
             <input type="text" matInput [readonly]="true" [formControl]="getCtrl('date')" placeholder="Date"
                 aria-describedby="dateHelp" autocomplete="off">
-            <!-- <button type="button" *ngIf="isSet('date')" matSuffix mat-icon-button aria-label="Clear" [disabled]="formDisabled"
-                (click)="set('date', '')">
-                <mat-icon>close</mat-icon>
-            </button> -->
             <div id="dateHelp" class="form-text d-none">
                 Date of the event.
             </div>
-            <!-- <mat-error *ngIf="getError('date')">{{getError('date')}}</mat-error> -->
         </mat-form-field>
-        <!-- <mat-form-field *ngIf="data.action == 'Modify'" class="w-100">
-            <mat-label>Delete</mat-label> -->
         <div *ngIf="data.action == 'Modify'" class="w-100">
             <mat-checkbox matInput [formControl]="getCtrl('delete')" placeholder="Delete"
                 aria-describedby="deleteHelp" autocomplete="off">Delete</mat-checkbox>
@@ -74,12 +50,13 @@
                 If checked the event will be deleted.
             </div>
         </div>
-        <!-- </mat-form-field> -->
     </form>
 </mat-dialog-content>
+
 <mat-dialog-actions class="pb-4 pe-5" align="end">
+
     <button mat-raised-button mat-dialog-close color="warn" class="fs-2 h-d5">Cancel</button>
     <button mat-raised-button color="primary"
         [disabled]="!formDisabled && (!fg.valid || !areChanges())" class="fs-2 h-d5 action-btn user-component"
-        [mat-dialog-close]="action()">{{ data.action }}</button>
+        [mat-dialog-close]="action()">{{ get("delete") ? "Delete" : data.action }}</button>
 </mat-dialog-actions>

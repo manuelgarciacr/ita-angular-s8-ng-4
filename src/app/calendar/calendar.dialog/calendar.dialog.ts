@@ -16,7 +16,6 @@ type Type = IEvent;
 export interface DialogData {
     action: string;
     item: Type;
-//    items: Type[];
 }
 
 @Component({
@@ -39,21 +38,14 @@ export interface DialogData {
     ],
 })
 export class CalendarDialog {
-    //private dialogRef = inject(MatDialogRef<CalendarDialog>);
     protected data: DialogData = inject(MAT_DIALOG_DATA);
     private formBuilder = inject(FormBuilder);
-    //private options: Type[] = this.data.items;
-    //private filteredOptions!: Observable<Type[]>;
     protected control = new FormControl<string | Type>("");
     protected fg: FormGroup = this.formBuilder.group({});
     protected formDisabled = false;
 
     ngOnInit() {
         const formGroup = {
-            // _id: new FormControl(""),
-            // updatedAt: new FormControl(""),
-            // createdAt: new FormControl(""),
-            // __v: new FormControl(""),
             title: new FormControl(this.data.item.title, {
                 validators: [Validators.required],
             }),
@@ -68,12 +60,9 @@ export class CalendarDialog {
                     ? new FormControl(false)
                     : undefined,
         };
+
         this.fg = this.formBuilder.group(formGroup);
-        // this.fg
-        //     .get("date")
-        //     ?.setValue(
-        //         this.data.item.date.toLocaleString("es-ES").replace(/,.*$/, "")
-        //     );
+
         if (this.data.action == "Delete") {
             this.formDisabled = true;
         }
@@ -86,21 +75,10 @@ export class CalendarDialog {
         const subject = field === "title" ? "The title" : "The text";
 
         if (errors["required"]) return subject + " is mandatory.";
-        // if (errors["minlength"])
-        //     return (
-        //         subject +
-        //         ` must be at lest ${errors["minlength"].requiredLength} characters.`
-        //     );
 
-        // if (errors["checkPassword"])
-        //     return (
-        //         subject +
-        //         " must have at least one lowercase letter, one uppercase letter, one digit, and one special character."
-        //     );
         return subject + " is not valid.";
     };
 
-    // onNoClick = (): void => this.dialogRef.close();
     protected action = () => ({ ...this.fg.value, date: this.data.item.date });
 
     // Helpers

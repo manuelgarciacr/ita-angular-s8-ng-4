@@ -11,7 +11,6 @@ import { NavbarComponent } from "../infrastructure/components/navbar/navbar.comp
     imports: [CommonModule, RouterOutlet, NavbarComponent] //, TranslateModule],
 })
 export class AppComponent {
-    title = 'ita-angular-s8-ng-4';
 
     constructor() {}
 }
