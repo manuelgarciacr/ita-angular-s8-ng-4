@@ -1,24 +1,21 @@
-import { NgFor, AsyncPipe } from '@angular/common';
-import { Component, Inject, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormControl, FormBuilder } from '@angular/forms';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, FormControl, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Observable, startWith, map } from 'rxjs';
 import { IEvent } from 'src/domain/model/IEvent';
 
 type Type = IEvent;
 
 export interface DialogData {
     action: string;
-    name: string;
-    title: string;
-    date: Date;
-    text: string;
-    items: Type[];
+    item: Type;
+//    items: Type[];
 }
 
 @Component({
@@ -31,52 +28,85 @@ export interface DialogData {
         MatInputModule,
         MatSelectModule,
         MatAutocompleteModule,
+        MatIconModule,
         FormsModule,
-        NgFor,
+        NgIf,
         AsyncPipe,
         MatButtonModule,
         ReactiveFormsModule,
     ],
 })
 export class CalendarDialog {
-    private dialogRef = inject(MatDialogRef<CalendarDialog>);
-    @Inject(MAT_DIALOG_DATA) private data = inject(DialogData);
-    private formBuilder: FormBuilder,
-    control = new FormControl<string | Type>("");
-    options: Type[] = [];
-    filteredOptions!: Observable<Type[]>;
-
-    constructor(
-
-    ) {
-        this.options = data.items;
-    }
+    //private dialogRef = inject(MatDialogRef<CalendarDialog>);
+    protected data: DialogData = inject(MAT_DIALOG_DATA);
+    private formBuilder = inject(FormBuilder);
+    //private options: Type[] = this.data.items;
+    //private filteredOptions!: Observable<Type[]>;
+    protected control = new FormControl<string | Type>("");
+    protected fg: FormGroup = this.formBuilder.group({});
+    protected formDisabled = false;
 
     ngOnInit() {
-        this.filteredOptions = this.control.valueChanges.pipe(
-            startWith(""),
-            map(value => {
-                const name = this.name(value!);
-                return name
-                    ? this._filter(name as string)
-                    : this.options.slice();
-            })
+        const formGroup = {
+            // _id: new FormControl(""),
+            // updatedAt: new FormControl(""),
+            // createdAt: new FormControl(""),
+            // __v: new FormControl(""),
+            title: new FormControl("", {
+                validators: [Validators.required],
+            }),
+            text: new FormControl("", {
+                validators: [Validators.required],
+            }),
+            date: new FormControl(""),
+        };
+        this.fg = this.formBuilder.group(formGroup);
+        console.log(
+            "RRRRRRRRRRRRR",
+            this.data.item.date.toLocaleString("es-ES")
         );
+        this.fg
+            .get("date")
+            ?.setValue(
+                this.data.item.date.toLocaleString("es-ES").replace(/,.*$/, "")
+            );
+        if (this.data.action == "Delete") {
+            this.formDisabled = true;
+        }
     }
 
-    onNoClick = (): void => this.dialogRef.close();
+    protected getError = (field: string) => {
+        const errors = this.fg.get(field)?.errors ?? {};
 
-    protected displayFn = (item: Type): string => item && item.name ? item.name : "";
+        if (Object.keys(errors).length === 0) return null;
+        const subject = field === "title" ? "The title" : "The text";
 
-    private _filter(name: string): Type[] {
-        const filterValue = name.toLowerCase();
+        if (errors["required"]) return subject + " is mandatory.";
+        // if (errors["minlength"])
+        //     return (
+        //         subject +
+        //         ` must be at lest ${errors["minlength"].requiredLength} characters.`
+        //     );
 
-        return this.options.filter(option =>
-            option.name.toLowerCase().includes(filterValue)
-        );
-    }
+        // if (errors["checkPassword"])
+        //     return (
+        //         subject +
+        //         " must have at least one lowercase letter, one uppercase letter, one digit, and one special character."
+        //     );
+        return subject + " is not valid.";
+    };
 
-    protected name = (value: string | Type) =>
-        typeof value === "string" ? value : value?.name;
+    // onNoClick = (): void => this.dialogRef.close();
+    protected action = () => ({ ...this.fg.value, date: this.data.item.date });
 
+    // Helpers
+    getCtrl = (name: string) => this.fg.get(name) as FormControl;
+    isSet = (name: string) => this.fg.get(name)?.value != "";
+    set = (name: string, val: unknown) => this.fg.get(name)?.setValue(val);
+    get = (name: string) => this.fg.get(name)?.value;
+    areChanges = () => {
+        const a = this.fg.value;
+        const b = this.data.item;
+        return Object.keys(a).some(key => a[key] !== b[key as keyof Type]);
+    };
 }

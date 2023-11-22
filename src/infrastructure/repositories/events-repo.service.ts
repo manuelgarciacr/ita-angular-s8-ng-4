@@ -4,7 +4,7 @@ import { environment } from "src/environments/environment";
 import { HttpAdapter } from "../adapters/HttpAdapter";
 import { IEvent } from "src/domain/model/IEvent";
 
-const URL = `${environment.url}/calendar`;
+const URL = `${environment.url}/events`;
 
 @Injectable({
     providedIn: "root",

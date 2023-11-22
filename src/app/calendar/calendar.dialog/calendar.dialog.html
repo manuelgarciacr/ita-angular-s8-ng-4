@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>{{data.action}}</h1>
+<!-- <h1 mat-dialog-title>{{data.action}}</h1>
 <div mat-dialog-content>
     <mat-form-field>
         <mat-label>Event name</mat-label>
@@ -14,4 +14,62 @@
     <button mat-button (click)="onNoClick()">Cancel</button>
     <button mat-button [mat-dialog-close]="name(control.value!)" cdkFocusInitial>No</button>
     <button mat-button [mat-dialog-close]="name(control.value!)" cdkFocusInitial>Ok</button>
+</div> -->
+
+<div mat-dialog-title class="dialog-title d-flex justify-content-between mt-3">
+
+    <h2>{{data.action}} event</h2>
+    <button mat-mini-fab aria-label="Close dialog" mat-dialog-close>
+        <mat-icon>close</mat-icon>
+    </button>
 </div>
+<mat-dialog-content>
+
+    <form [formGroup]="fg" class="was-validated bg-light text-bg-light rounded-4 p-5">
+        <mat-form-field class="w-100">
+            <mat-label>Title</mat-label>
+            <input type="text" matInput [readonly]="formDisabled" [formControl]="getCtrl('title')"
+                placeholder="Title" aria-describedby="titleHelp" autocomplete="off">
+            <button type="button" *ngIf="isSet('title')" matSuffix mat-icon-button aria-label="Clear"
+                [disabled]="formDisabled" (click)="set('title', '')">
+                <mat-icon>close</mat-icon>
+            </button>
+            <div id="titleHelp" class="form-text d-none">
+                Title of the event.
+            </div>
+            <mat-error *ngIf="getError('title')">{{getError('title')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Text</mat-label>
+            <input type="text" matInput [readonly]="formDisabled" [formControl]="getCtrl('text')"
+                placeholder="Text" aria-describedby="textHelp" autocomplete="off">
+            <button type="button" *ngIf="isSet('text')" matSuffix mat-icon-button aria-label="Clear"
+                [disabled]="formDisabled" (click)="set('text', '')">
+                <mat-icon>close</mat-icon>
+            </button>
+            <div id="textHelp" class="form-text d-none">
+                Text of the event.
+            </div>
+            <mat-error *ngIf="getError('text')">{{getError('text')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Date</mat-label>
+            <input type="text" matInput [readonly]="true" [formControl]="getCtrl('date')" placeholder="Date"
+                aria-describedby="dateHelp" autocomplete="off">
+            <!-- <button type="button" *ngIf="isSet('date')" matSuffix mat-icon-button aria-label="Clear" [disabled]="formDisabled"
+                (click)="set('date', '')">
+                <mat-icon>close</mat-icon>
+            </button> -->
+            <div id="dateHelp" class="form-text d-none">
+                Date of the event.
+            </div>
+            <!-- <mat-error *ngIf="getError('date')">{{getError('date')}}</mat-error> -->
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions class="pb-4 pe-5" align="end">
+    <button mat-raised-button mat-dialog-close color="warn" class="fs-2 h-d5">Cancel</button>
+    <button mat-raised-button color="primary"
+        [disabled]="!formDisabled && (!fg.valid || !areChanges())" class="fs-2 h-d5 action-btn user-component"
+        [mat-dialog-close]="action()">{{ data.action }}</button>
+</mat-dialog-actions>
