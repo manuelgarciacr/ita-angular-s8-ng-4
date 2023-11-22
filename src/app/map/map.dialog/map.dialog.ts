@@ -19,6 +19,7 @@ export interface DialogData {
 @Component({
     selector: "map-dialog",
     templateUrl: "map.dialog.html",
+    styleUrls: ["./map.dialog.css"],
     standalone: true,
     imports: [
         MatDialogModule,
