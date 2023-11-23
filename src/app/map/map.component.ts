@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { NgxMapboxGLModule } from "ngx-mapbox-gl";
 import { environment } from "src/environments/environment";
-import mapboxgl, { LngLat, Map as MbMap } from "mapbox-gl";
+import mapboxgl, { LngLat, Marker, Map as MbMap } from "mapbox-gl";
 import {
     DrawControlLine,
     DrawControlPoint,
@@ -37,11 +37,7 @@ const draw = MB.createDraw(
 
 @Component({
     standalone: true,
-    imports: [
-        NgxMapboxGLModule,
-        MatDialogModule,
-        Dialog2Component,
-    ],
+    imports: [NgxMapboxGLModule, MatDialogModule, Dialog2Component],
     templateUrl: "map.component.html",
     styleUrls: ["map.component.scss"],
     providers: [{ provide: MAT_DIALOG_DATA, useValue: {} }],
@@ -49,6 +45,8 @@ const draw = MB.createDraw(
 export class MapComponent implements OnInit, AfterViewInit {
     private features: IFeatCol[] = [];
     private name: string = "";
+    private dialogResult: {_id: string, name: string} = {_id: "", name: ""}
+    private markers: Marker[] = [];
 
     constructor(private repo: FeaturesRepoService, public dialog: MatDialog) {}
 
@@ -69,8 +67,33 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-
         mbMap.addControl(draw, "top-right");
+        mbMap.addControl(new mapboxgl.NavigationControl(), "top-left");
+        mbMap.addControl(
+            new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+                // When active the map will receive updates to the device's location as it changes.
+                trackUserLocation: true,
+                // Draw an arrow next to the location dot to indicate which direction the device is heading.
+                showUserHeading: true,
+            }),
+            "top-left"
+        );
+        mbMap.on("load", () => {
+            // Add an image to use as a custom marker
+            mbMap.loadImage("assets/attraction.png", (error, image) => {
+                if (error) throw error;
+
+                this.addAttractions(image);
+            });
+            mbMap.loadImage("assets/restaurant.png", (error, image) => {
+                if (error) throw error;
+
+                this.addRestaurants();
+            });
+        });
 
         const subGrp = MB.addSubgroup();
 
@@ -82,10 +105,9 @@ export class MapComponent implements OnInit, AfterViewInit {
             if (data.features.length == 0) return;
 
             this.openDialog("Save", this.features, () => {
-
                 if ((this.name ?? "") == "") return;
 
-                const id= this.features.find(v => v.name == this.name)?._id
+                const id = this.features.find(v => v.name == this.name)?._id;
 
                 const dlgRef = this.dialog.open(Dialog2Component, {
                     data: {
@@ -106,37 +128,41 @@ export class MapComponent implements OnInit, AfterViewInit {
 
                         if (id)
                             this.repo
-                                .putFeature({ _id: id, name: this.name, feature: data })
+                                .putFeature({
+                                    _id: id,
+                                    name: this.name,
+                                    feature: data,
+                                })
                                 .pipe(first())
                                 .subscribe(resp => {
-                                    const idx = this.features.findIndex(v => v._id == id);
+                                    const idx = this.features.findIndex(
+                                        v => v._id == id
+                                    );
                                     if (idx >= 0)
-                                        this.features[idx] = resp.data[0]
+                                        this.features[idx] = resp.data[0];
                                 });
                         else
                             this.repo
                                 .addFeature({ name: this.name, feature: data })
                                 .pipe(first())
                                 .subscribe(resp => {
-                                    this.features.push(resp.data[0])
+                                    this.features.push(resp.data[0]);
                                 });
                     });
             });
         });
         MB.addBtn(subGrp, DOWNLOAD_ICON, "Load", () => {
-
             draw.changeMode("simple_select");
 
             if (this.features.length <= 0) return;
 
             this.openDialog("Load", this.features, () => {
-
-                if ((this.name ?? "") == "") return;
+                //if ((this.name ?? "") == "") return;
 
                 const dlgRef = this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Load",
-                        text: `Load the features collection "${this.name}" ?`,
+                        text: `Load the features collection "${this.dialogResult.name}" ?`,
                         yes: "OK",
                         cancel: "CANCEL",
                     },
@@ -146,18 +172,31 @@ export class MapComponent implements OnInit, AfterViewInit {
                     .afterClosed()
                     .pipe(first())
                     .subscribe(resp => {
+                        console.log("RESPRESP", resp)
                         if (resp != "yes") return;
 
                         this.repo
-                            .getFeatures({ name: this.name })
+                            .getFeatures(this.dialogResult._id)
                             .pipe(first())
                             .subscribe(resp => {
-                                draw.deleteAll();
-                                draw.add(resp.data[0].feature)
-                                const bounds = this.fit(resp.data[0]);
-                                mbMap.fitBounds(bounds)
-                            });
+                                console.log("RESPRESP22", resp);
+                                const coll = resp.data[0].feature;
 
+                                this.markers.forEach(v => v.remove());
+                                draw.deleteAll();
+                                draw.add(coll);
+                                coll.features.forEach(v => {
+                                    if (v.geometry.type == "Point") {
+                                        const marker = new mapboxgl.Marker()
+                                            .setLngLat(v.geometry.coordinates as [number, number])
+                                            .addTo(mbMap);
+                                        this.markers.push(marker);
+                                    }
+
+                                })
+                                const bounds = this.fit(resp.data[0]);
+                                mbMap.fitBounds(bounds, {padding: 50});
+                            });
                     });
             });
         });
@@ -183,7 +222,6 @@ export class MapComponent implements OnInit, AfterViewInit {
                     coordinates.push(...(coor as LngLat[]))
                 );
             }
-
         });
 
         // Create a 'LngLatBounds' with both corners at the first coordinate.
@@ -200,17 +238,27 @@ export class MapComponent implements OnInit, AfterViewInit {
         return bounds;
     };
 
+    private addAttractions = (image: HTMLImageElement | ArrayBufferView | { width: number; height: number; data: Uint8ClampedArray | Uint8Array; } | ImageData | ImageBitmap | undefined) => {
+        mbMap.addImage("attraction-marker", image as HTMLImageElement);
+    };
+
+    private addRestaurants = () => {};
+
     openDialog(
         action: string,
         features: IFeatCol[],
         callback: () => void
     ): void {
         const dialogRef = this.dialog.open(MapDialog, {
-            data: { name: this.name, features: features, action: action },
+            data: {
+                name: this.dialogResult.name,
+                features: features,
+                action: action,
+            },
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            this.name = result;
+            this.dialogResult = result;
             callback();
         });
     }

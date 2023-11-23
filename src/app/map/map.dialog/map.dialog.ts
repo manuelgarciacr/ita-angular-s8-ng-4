@@ -73,4 +73,6 @@ export class MapDialog {
     protected name = (value: string | IFeatCol) =>
         typeof value === "string" ? value : value?.name;
 
+    protected value = (value: string | IFeatCol) =>
+        typeof value === "string" ? {_id: "", name: value} : {_id: value._id, name: value.name};
 }
