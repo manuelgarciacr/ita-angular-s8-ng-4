@@ -87,6 +87,24 @@ export const MB = {
 
     },
 
+    addCheckbox: (subGrp: HTMLDivElement, title: string, callback: (ev: MouseEvent) => void) => {
+        const label = document.createElement("label") as HTMLLabelElement;
+        label.innerText = title;
+        label.style.marginLeft = ".5rem";
+        const chk = document.createElement("input") as HTMLInputElement;
+        chk.type = "checkbox";
+        chk.addEventListener("click", callback);
+        chk.title = title;
+        chk.style.cursor = "pointer";
+
+        const div = document.createElement("div") as HTMLDivElement;
+        div.style.padding = ".2rem";
+        div.appendChild(chk);
+        div.appendChild(label);
+
+        subGrp.append(div)
+    },
+
     getCtrlGroup: (grp: ctrlGroup = "top-right") =>
         document.querySelector(".mapboxgl-ctrl-" + grp) as HTMLDivElement,
 

@@ -43,7 +43,8 @@ export class MapDialog {
         public dialogRef: MatDialogRef<MapDialog>,
         @Inject(MAT_DIALOG_DATA) protected data: DialogData
     ) {
-        this.options = data.features;
+        this.options = data.features.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
+
     }
 
     ngOnInit() {
