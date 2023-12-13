@@ -105,7 +105,16 @@ export class MapComponent implements OnInit, AfterViewInit {
 
             draw.changeMode("simple_select");
 
-            if (data.features.length == 0) return;
+            if (data.features.length == 0) {
+                this.dialog.open(Dialog2Component, {
+                    data: {
+                        title: "SAVE",
+                        text:"No features have been drawn",
+                        yes: "OK",
+                    },
+                });
+                return;
+            }
 
             this.openDialog("Save", this.features, () => {
                 const id = this.dialogResult._id;
@@ -161,7 +170,16 @@ export class MapComponent implements OnInit, AfterViewInit {
         MB.addBtn(subGrp, DOWNLOAD_ICON, "Load", () => {
             draw.changeMode("simple_select");
 
-            if (this.features.length <= 0) return;
+            if (this.features.length <= 0) {
+                this.dialog.open(Dialog2Component, {
+                    data: {
+                        title: "LOAD",
+                        text: "No features have been saved",
+                        yes: "OK",
+                    },
+                });
+                return;
+            }
 
             this.openDialog(
                 "Load",
@@ -206,6 +224,10 @@ export class MapComponent implements OnInit, AfterViewInit {
             const checked = (ev.target as HTMLInputElement).checked;
 
             if (checked) {
+                const src = mbMap.getSource("attractions-src") as unknown as {
+                    _data: FeatureCollection;
+                };
+                if (src == undefined) return;
                 // Add a symbol layer
                 mbMap.addLayer({
                     id: "attractions-id",
@@ -225,10 +247,6 @@ export class MapComponent implements OnInit, AfterViewInit {
                     },
                 });
 
-                const src = mbMap.getSource(
-                    "attractions-src"
-                ) as unknown as {_data: FeatureCollection};
-
                 if (src._data.features.length) {
                     const bounds = this.fit({
                         name: "",
@@ -237,7 +255,8 @@ export class MapComponent implements OnInit, AfterViewInit {
                     mbMap.fitBounds(bounds, { padding: 50 });
                 }
             } else {
-                mbMap.removeLayer("attractions-id");
+                if (mbMap.getLayer("attractions-id"))
+                    mbMap.removeLayer("attractions-id");
             }
         });
 
@@ -245,6 +264,10 @@ export class MapComponent implements OnInit, AfterViewInit {
             const checked = (ev.target as HTMLInputElement).checked;
 
             if (checked) {
+                const src = mbMap.getSource("restaurants-src") as unknown as {
+                    _data: FeatureCollection;
+                };
+                if (src == undefined) return;
                 // Add a symbol layer
                 mbMap.addLayer({
                     id: "restaurants-id",
@@ -264,9 +287,6 @@ export class MapComponent implements OnInit, AfterViewInit {
                     },
                 });
 
-                const src = mbMap.getSource("restaurants-src") as unknown as {
-                    _data: FeatureCollection;
-                };
 
                 if (src._data.features.length) {
                     const bounds = this.fit({
@@ -276,7 +296,8 @@ export class MapComponent implements OnInit, AfterViewInit {
                     mbMap.fitBounds(bounds, { padding: 50 });
                 }
             } else {
-                mbMap.removeLayer("restaurants-id");
+                if (mbMap.getLayer("restaurants-id"))
+                    mbMap.removeLayer("restaurants-id");
             }
         });
 
@@ -347,6 +368,8 @@ export class MapComponent implements OnInit, AfterViewInit {
             .getFeatures({name: "attractions"})
             .pipe(first())
             .subscribe(resp => {
+                if (resp.data.length == 0)
+                    return;
                 // Add a GeoJSON source with the features
                 resp.data[0].feature.features.forEach(element => {
                     const el = element.geometry as unknown as DrawPoint;
@@ -383,6 +406,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             .getFeatures({ name: "restaurants" })
             .pipe(first())
             .subscribe(resp => {
+                if (resp.data.length == 0) return;
                 // Add a GeoJSON source with the features
                 resp.data[0].feature.features.forEach(element => {
                     const el = element.geometry as unknown as DrawPoint;

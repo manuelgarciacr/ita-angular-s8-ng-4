@@ -86,5 +86,5 @@
 </mat-dialog-content>
 <mat-dialog-actions class="pb-4 pe-5" align="end">
     <button mat-raised-button mat-dialog-close color="warn" class="fs-2 h-d5">Cancel</button>
-    <button mat-raised-button cdkFocusInitial color="primary"  [disabled]="!formDisabled && (!userForm.valid || !areChanges())" class="fs-2 h-d5 action-btn user-component" (click)="save()">{{ data.action }}</button>
+    <button mat-raised-button color="primary"  [disabled]="!formDisabled && (!userForm.valid || !areChanges())" class="fs-2 h-d5 action-btn user-component" (click)="save()">{{ data.action }}</button>
 </mat-dialog-actions>
