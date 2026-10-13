@@ -1,4 +1,9 @@
-# IT Academy Sprint 8 Angular IV Inprocode.
+# IT Academy Sprint 8 v2 Inprocode.
+
+## Vulnerabilities
+
+This repository uses angular v16. Most vulnerabilities are fixed by updating to version 20 or 21, but since it is a class assignment I want to keep v16. No critical vulnerabilities.
+
 
 ### Environment setup
 

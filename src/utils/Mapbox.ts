@@ -63,6 +63,7 @@ export class DrawControlPoint extends DrawControl {}
 export class DrawControlTrash extends DrawControl {}
 
 export const MB = {
+    icon: "",
     addSubgroup: (grp: ctrlGroup = "top-right") => {
         const div = document.createElement("div") as HTMLDivElement;
         const group = MB.getCtrlGroup(grp);
@@ -132,6 +133,10 @@ export const MB = {
             controls[type] = true;
 
             switch (type) {
+                case "point": {
+                    newStyles.push(...drawPoint(ctrl));
+                    break;
+                }
                 case "line_string": {
                     newStyles.push(...drawLine(ctrl));
                     break;
@@ -158,6 +163,67 @@ export const MB = {
         return mbd
     }
 }
+
+// line stroke
+const drawPoint = (ctrl: DrawControlPoint) => [
+    {
+        // ACTIVE (being drawn)
+        id: "gl-draw-point-active",
+        //type: MB.icon,
+        type: "circle",
+        filter: ["all", ["==", "$type", "Point"], ["==", "active", "true"]],
+        // layout: {
+        //     "icon-image": "custom-icon",
+        //     "icon-size": 1,
+        //     "icon-anchor": "bottom",
+        // },
+        paint: {
+            "circle-radius": 10,
+            "circle-color": "#007cb0",
+            // "line-color": "#D20C0C",
+            // "line-dasharray": [0.2, 2],
+            // "line-width": 3,
+        },
+    },
+    {
+        // ACTIVE (being drawn)
+        id: "gl-draw-point-inactive",
+        //type: MB.icon,
+        type: "circle",
+        filter: [
+            "all",
+            ["==", "$type", "Point"],
+            ["==", "active", "false"],
+            ["!=", "mode", "static"],
+        ],
+        // layout: {
+        //     "icon-image": "custom-icon",
+        //     "icon-size": 1,
+        //     "icon-anchor": "bottom",
+        // },
+        paint: {
+            "circle-radius": 10,
+            "circle-color": "#04a3a3",
+        },
+    },
+    {
+        // INACTIVE (static, already drawn)
+        id: "gl-draw-point-static",
+        //type: MB.icon,
+        type: "circle",
+        filter: ["all", ["==", "$type", "Point"], ["==", "mode", "static"]],
+        // layout: {
+        //     "icon-image": "custom-icon",
+        //     "icon-size": 1,
+        //     "icon-anchor": "bottom",
+        // },
+        paint: {
+            "circle-radius": 10,
+            "circle-color": "#007cb0",
+        },
+    },
+];
+
 
 // line stroke
 const drawLine = (ctrl: DrawControlLine) => {

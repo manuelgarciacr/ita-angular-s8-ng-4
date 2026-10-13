@@ -1,0 +1,42 @@
+
+name: Angular CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar Angular para producción
+        run: npm run build-prod
+
+      - name: Comprobar los archivos generados
+        run: test -s dist/ita-angular-s8-v2/index.html
+
+      - name: Guardar el resultado de la compilación
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-dist
+          path: dist/ita-angular-s8-v2/
+          if-no-files-found: error
+          retention-days: 7

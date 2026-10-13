@@ -18,7 +18,7 @@ export const appConfig: ApplicationConfig = {
         HttpAdapter,
         importProvidersFrom(
             NgxMapboxGLModule.withConfig({
-                accessToken: environment.mapbox,
+                accessToken: environment.mapboxToken,
             })
         ),
         importProvidersFrom(MapboxDraw),

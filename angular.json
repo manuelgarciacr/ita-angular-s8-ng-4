@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "ita-angular-s8-ng-4": {
+        "ita-angular-s8-v2": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -42,7 +42,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/ita-angular-s8-ng-4",
+                        "outputPath": "dist/ita-angular-s8-v2",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": ["zone.js"],
@@ -63,7 +63,10 @@
                             "write-excel-file",
                             "ngx-mapbox-gl",
                             "jszip",
-                            "file-saver"
+                            "file-saver",
+                            "@mapbox/geojson-normalize",
+                            "fast-deep-equal",
+                            "@mapbox/geojson-area"
                         ]
                     },
                     "configurations": {
@@ -71,13 +74,13 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "500kb",
-                                    "maximumError": "1mb"
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
                                 },
                                 {
                                     "type": "anyComponentStyle",
-                                    "maximumWarning": "2kb",
-                                    "maximumError": "4kb"
+                                    "maximumWarning": "4kb",
+                                    "maximumError": "8kb"
                                 }
                             ],
                             "outputHashing": "all"
@@ -97,10 +100,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "browserTarget": "ita-angular-s8-ng-4:build:production"
+                            "browserTarget": "ita-angular-s8-v2:build:production"
                         },
                         "development": {
-                            "browserTarget": "ita-angular-s8-ng-4:build:development"
+                            "browserTarget": "ita-angular-s8-v2:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -108,7 +111,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "ita-angular-s8-ng-4:build"
+                        "browserTarget": "ita-angular-s8-v2:build"
                     }
                 },
                 "test": {

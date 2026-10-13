@@ -52,7 +52,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     constructor(private repo: FeaturesRepoService, public dialog: MatDialog) {}
 
     ngOnInit(): void {
-        mapboxgl.accessToken = environment.mapbox;
+        mapboxgl.accessToken = environment.mapboxToken;
         mbMap = new mapboxgl.Map({
             container: "map",
             style: "mapbox://styles/mapbox/streets-v12",
@@ -63,7 +63,6 @@ export class MapComponent implements OnInit, AfterViewInit {
             lngLat = new LngLat(res.coords.longitude, res.coords.latitude);
             mbMap.setCenter(lngLat);
         });
-
         this.repo.getFeatures().subscribe(resp => (this.features = resp.data));
     }
 
@@ -96,6 +95,10 @@ export class MapComponent implements OnInit, AfterViewInit {
 
                 this.addRestaurants(image as ImageBitmap);
             });
+            // mbMap.loadImage("assets/restaurant.png", (error, image) => {
+            //     if (error) throw error;
+            //     MB.icon="circle"
+            // });
         });
 
         const subGrp = MB.addSubgroup();
@@ -114,6 +117,17 @@ export class MapComponent implements OnInit, AfterViewInit {
                     },
                 });
                 return;
+            }
+
+            const features=data.features;
+            const len=features.length;
+
+            for (let i = len - 1; i >= 0; i--) {
+                const geometry= features[i].geometry
+                if (geometry.type != "Point") continue;
+                if (geometry.coordinates.length == 0) {
+                    features.splice(i, 1)
+                }
             }
 
             this.openDialog("Save", this.features, () => {
@@ -311,6 +325,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     private addMarkers = (iFeatCol: IFeatCol) => {
         this.markers.forEach(v => v.remove());
         this.markers.splice(0);
+
         iFeatCol.feature.features.forEach(v => {
             if (v.geometry.type == "Point") {
                 const marker = new mapboxgl.Marker()
@@ -368,8 +383,8 @@ export class MapComponent implements OnInit, AfterViewInit {
             .getFeatures({name: "attractions"})
             .pipe(first())
             .subscribe(resp => {
-                if (resp.data.length == 0)
-                    return;
+                if (resp.data.length == 0) return;
+
                 // Add a GeoJSON source with the features
                 resp.data[0].feature.features.forEach(element => {
                     const el = element.geometry as unknown as DrawPoint;
@@ -384,8 +399,8 @@ export class MapComponent implements OnInit, AfterViewInit {
                     else
                         lnglat = coord[0][0];
 
-                    const lng = lnglat[0].toFixed(5);
-                    const lat = lnglat[1].toFixed(5);
+                    const lng = lnglat[0];
+                    const lat = lnglat[1];
 
                     element.properties = {lnglat: `[${lng}, ${lat}]`}
                 });
@@ -407,6 +422,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             .pipe(first())
             .subscribe(resp => {
                 if (resp.data.length == 0) return;
+
                 // Add a GeoJSON source with the features
                 resp.data[0].feature.features.forEach(element => {
                     const el = element.geometry as unknown as DrawPoint;
@@ -418,8 +434,8 @@ export class MapComponent implements OnInit, AfterViewInit {
                     else if (typeof coord[0][0] == "number") lnglat = coord[0];
                     else lnglat = coord[0][0];
 
-                    const lng = lnglat[0].toFixed(5);
-                    const lat = lnglat[1].toFixed(5);
+                    const lng = lnglat[0];
+                    const lat = lnglat[1];
 
                     element.properties = { lnglat: `[${lng}, ${lat}]` };
                 });
