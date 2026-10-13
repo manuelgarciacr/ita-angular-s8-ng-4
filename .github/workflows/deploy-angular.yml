@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,27 +27,65 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Crear entorno para CI
+      - name: Crear entorno de producción
+        env:
+          ANGULAR_API_URL: ${{ secrets.ANGULAR_API_URL }}
+          ANGULAR_MAPBOX_TOKEN: ${{ secrets.ANGULAR_MAPBOX_TOKEN }}
         run: |
-          mkdir -p src/environments
-          cat > src/environments/environment.ts <<'EOF'
-          export const environment = {
+          node -e '
+          const fs = require("node:fs");
+          const env = {
             production: true,
-            url: '',
-            mapboxToken: ''
+            url: process.env.ANGULAR_API_URL,
+            mapboxToken: process.env.ANGULAR_MAPBOX_TOKEN
           };
-          EOF
+          if (!env.url || !env.mapboxToken) {
+            console.error("Falta configurar ANGULAR_API_URL o ANGULAR_MAPBOX_TOKEN");
+            process.exit(1);
+          }
+          fs.writeFileSync(
+            "src/environments/environment.ts",
+            "export const environment = " + JSON.stringify(env, null, 2) + ";\n"
+          );
+          '
 
       - name: Compilar Angular para producción
         run: npm run build-prod
 
-      - name: Comprobar los archivos generados
+      - name: Comprobar la compilación
         run: test -s dist/ita-angular-s8-v2/index.html
 
-      - name: Guardar el resultado de la compilación
-        uses: actions/upload-artifact@v4
-        with:
-          name: angular-dist
-          path: dist/ita-angular-s8-v2/
-          if-no-files-found: error
-          retention-days: 7
+      - name: Instalar herramientas de despliegue
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wireguard-tools rsync
+
+      - name: Conectar a WireGuard
+        env:
+          WIREGUARD_PRIVATE_KEY: ${{ secrets.WIREGUARD_PRIVATE_KEY }}
+        run: |
+          sudo install -m 600 /dev/null /etc/wireguard/wg0.conf
+          printf '[Interface]\nPrivateKey = %s\nAddress = 10.8.0.250/32\n\n[Peer]\nPublicKey = 8prB1igFewKtHFbckik0CQwnylRB1OSlyfAx+oCA6UM=\nEndpoint = 82.223.104.217:51820\nAllowedIPs = 10.8.0.1/32\nPersistentKeepalive = 25\n' "$WIREGUARD_PRIVATE_KEY" | sudo tee /etc/wireguard/wg0.conf > /dev/null
+          sudo chmod 600 /etc/wireguard/wg0.conf
+          sudo wg-quick up wg0
+
+      - name: Configurar SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          printf '%s\n' '10.8.0.1 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHzMwCa/GcWW2CU7FTt1XRjQWGP31eeajZ6DwqLA5dRi' > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+      - name: Verificar conexión SSH
+        run: |
+          ssh -o BatchMode=yes -o IdentitiesOnly=yes -i "$HOME/.ssh/id_ed25519" deploy-angular@10.8.0.1 'whoami'
+
+      - name: Desplegar Angular
+        run: |
+          rsync -az --delete \
+            -e "ssh -o BatchMode=yes -o IdentitiesOnly=yes -i $HOME/.ssh/id_ed25519" \
+            dist/ita-angular-s8-v2/ \
+            deploy-angular@10.8.0.1:/var/www/html/ita-angular-s8-v2/
