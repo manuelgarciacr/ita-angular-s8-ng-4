@@ -13,7 +13,7 @@
         "build-prod": "ng build --configuration production --base-href /ita-angular-s8-v2/",
         "watch": "ng build --watch --configuration development",
         "audit:table": "npm audit --json | jq -r '.vulnerabilities | to_entries[] | . as $v | [\"\\(.key)  \\($v.value.range)\", \"Severity: \\($v.value.severity)\", (if $v.value.fixAvailable == false then \"No fix available\" elif $v.value.fixAvailable == true then \"fix available via `npm audit fix`\" else \"fix available via `npm audit fix --force`\\nWill install \\($v.value.fixAvailable.name)@\\($v.value.fixAvailable.version)\\(if $v.value.fixAvailable.isSemVerMajor then \", which is a breaking change\" else \"\" end)\" end)] | .[]'",
-        "deploy": "rm -R /mnt/vps/ita-angular-s8-v2/*; cp -r dist/ita-angular-s8-v2/* /mnt/vps/ita-angular-s8-v2"
+        "deploy": "find /mnt/vps/ita-angular-s8-v2 -mindepth 1 -delete; cp -r dist/ita-angular-s8-v2/. /mnt/vps/ita-angular-s8-v2"
     },
     "browser": {
         "crypto": false
