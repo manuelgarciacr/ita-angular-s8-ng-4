@@ -150,6 +150,7 @@ export class UserComponent implements OnInit {
         this.repo.deleteUser(id).subscribe(resp => {
             if (resp.status == 200) this.dialogRef.close(resp);
             else {
+                (document.activeElement as HTMLElement | null)?.blur();
                 this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Error",
@@ -167,6 +168,7 @@ export class UserComponent implements OnInit {
     ) => {
         this.repo.getUsers({ email: newVal.email }).subscribe(resp => {
             if (resp.data.length > 0 && resp.data[0]._id !== newVal._id) {
+                (document.activeElement as HTMLElement | null)?.blur();
                 this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Alert",
@@ -184,6 +186,7 @@ export class UserComponent implements OnInit {
         this.repo.putUser(newVal).subscribe(resp => {
             if (resp.status == 200) this.dialogRef.close(resp);
             else {
+                (document.activeElement as HTMLElement | null)?.blur();
                 this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Error",
@@ -200,6 +203,7 @@ export class UserComponent implements OnInit {
         this.repo.addUser(newVal).subscribe(resp => {
             if (resp.status == 200) this.dialogRef.close(resp);
             else {
+                (document.activeElement as HTMLElement | null)?.blur();
                 this.dialog.open(Dialog2Component, {
                     data: {
                         title: "Error",

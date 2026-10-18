@@ -109,12 +109,14 @@ export class MapComponent implements OnInit, AfterViewInit {
             draw.changeMode("simple_select");
 
             if (data.features.length == 0) {
+                (document.activeElement as HTMLElement | null)?.blur();
                 this.dialog.open(Dialog2Component, {
                     data: {
                         title: "SAVE",
-                        text:"No features have been drawn",
+                        text: "No features have been drawn",
                         yes: "OK",
                     },
+                    autoFocus: "[cdkFocusInitial]",
                 });
                 return;
             }
@@ -136,6 +138,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
                 if (name == "") return;
 
+                (document.activeElement as HTMLElement | null)?.blur();
                 const dlgRef = this.dialog.open(Dialog2Component, {
                     data: {
                         title: id != "" ? "Overwrite" : "Add",
@@ -185,6 +188,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             draw.changeMode("simple_select");
 
             if (this.features.length <= 0) {
+                (document.activeElement as HTMLElement | null)?.blur();
                 this.dialog.open(Dialog2Component, {
                     data: {
                         title: "LOAD",
@@ -204,6 +208,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
                     if (id == "") return;
 
+                    (document.activeElement as HTMLElement | null)?.blur();
                     const dlgRef = this.dialog.open(Dialog2Component, {
                         data: {
                             title: "Load",
